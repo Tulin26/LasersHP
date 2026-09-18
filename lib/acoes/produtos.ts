@@ -80,7 +80,10 @@ export async function salvarProduto(
     modelo: d.modelo ?? null,
     descricao: d.descricao ?? null,
     indicacoes: d.indicacoes ?? null,
-    preco: d.preco_sob_consulta ? null : d.preco,
+    // Guardamos o preco mesmo com "sob consulta" marcado: quem decide o
+    // que a vitrine mostra e a flag, nao a ausencia do valor. Assim, ao
+    // desmarcar, o valor volta em vez de ter que ser digitado de novo.
+    preco: d.preco,
     preco_sob_consulta: d.preco_sob_consulta,
     estoque: d.estoque,
     estoque_minimo: d.estoque_minimo,

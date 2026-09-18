@@ -120,7 +120,7 @@ export function FormularioProduto({ produto }: { produto?: Produto }) {
           />
         </div>
 
-        <div onChange={() => undefined}>
+        <div>
           <label className="flex items-start gap-3 rounded-lg border p-3">
             <input
               name="preco_sob_consulta"
