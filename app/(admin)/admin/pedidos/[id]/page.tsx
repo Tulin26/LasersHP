@@ -10,10 +10,7 @@ import {
 import { SeletorStatusPedido } from "@/components/painel/seletor-status-pedido";
 import { ConverterPedido } from "@/components/painel/converter-pedido";
 import { buscarPedido, exigirSessao } from "@/lib/consultas/painel";
-import {
-  formatarDataHora,
-  formatarTelefone,
-} from "@/lib/formatar";
+import { formatarDataHora, formatarTelefone } from "@/lib/formatar";
 import { montarLinkWhatsApp } from "@/lib/whatsapp";
 
 export default async function PaginaPedido({

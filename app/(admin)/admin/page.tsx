@@ -1,11 +1,5 @@
 import Link from "next/link";
-import {
-  Boxes,
-  Inbox,
-  Receipt,
-  TrendingUp,
-  TriangleAlert,
-} from "lucide-react";
+import { Boxes, Inbox, Receipt, TrendingUp, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Avisos,
@@ -38,10 +32,7 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
 
   return (
     <>
-      <CabecalhoPagina
-        titulo="Painel"
-        descricao={`Resumo de ${mes}.`}
-      >
+      <CabecalhoPagina titulo="Painel" descricao={`Resumo de ${mes}.`}>
         <Button render={<Link href="/admin/vendas/nova" />} size="sm">
           <Receipt className="size-4" aria-hidden="true" />
           Nova venda
@@ -240,7 +231,10 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
           descricao="Cadastre os equipamentos, publique o site e os pedidos comecam a cair aqui."
           acao={
             sessao.ehAdmin
-              ? { href: "/admin/produtos/novo", texto: "Cadastrar o primeiro equipamento" }
+              ? {
+                  href: "/admin/produtos/novo",
+                  texto: "Cadastrar o primeiro equipamento",
+                }
               : undefined
           }
         />

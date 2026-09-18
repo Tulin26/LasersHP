@@ -85,9 +85,7 @@ export default async function PaginaPedidos(
               {pedidos.map((p) => (
                 <TableRow
                   key={p.id}
-                  className={
-                    p.status === "novo" ? "bg-primary/5" : undefined
-                  }
+                  className={p.status === "novo" ? "bg-primary/5" : undefined}
                 >
                   <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
                     {formatarDataHora(p.criado_em)}
@@ -166,7 +164,10 @@ export default async function PaginaPedidos(
       )}
 
       <p className="text-muted-foreground text-xs">
-        Situacoes: {Object.values(STATUS_PEDIDO).map((s) => s.texto).join(" · ")}
+        Situacoes:{" "}
+        {Object.values(STATUS_PEDIDO)
+          .map((s) => s.texto)
+          .join(" · ")}
       </p>
     </>
   );

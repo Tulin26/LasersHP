@@ -80,7 +80,9 @@ export function FormularioProduto({ produto }: { produto?: Produto }) {
           valor={produto?.indicacoes}
           linhas={4}
           ajuda="Uma indicacao por linha — a vitrine transforma cada linha num item da lista."
-          placeholder={"Depilacao definitiva\nRejuvenescimento facial\nTratamento de manchas"}
+          placeholder={
+            "Depilacao definitiva\nRejuvenescimento facial\nTratamento de manchas"
+          }
           erro={estado.erros?.indicacoes?.[0]}
         />
       </section>

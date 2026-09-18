@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -71,7 +72,7 @@ export default async function PaginaEquipamentos(
           </p>
           {busca && (
             <Button
-              render={<a href="/equipamentos" />}
+              render={<Link href="/equipamentos" />}
               variant="outline"
               className="mt-4"
             >

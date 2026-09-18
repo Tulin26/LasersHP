@@ -28,10 +28,25 @@ const ITENS = [
   { href: "/admin", rotulo: "Painel", icone: LayoutDashboard, exato: true },
   { href: "/admin/pedidos", rotulo: "Pedidos", icone: Inbox },
   { href: "/admin/vendas", rotulo: "Vendas", icone: Receipt },
-  { href: "/admin/produtos", rotulo: "Equipamentos", icone: Boxes, soAdmin: true },
+  {
+    href: "/admin/produtos",
+    rotulo: "Equipamentos",
+    icone: Boxes,
+    soAdmin: true,
+  },
   { href: "/admin/clientes", rotulo: "Clientes", icone: Users },
-  { href: "/admin/vendedores", rotulo: "Vendedores", icone: UserCog, soAdmin: true },
-  { href: "/admin/configuracoes", rotulo: "Configuracoes", icone: Settings, soAdmin: true },
+  {
+    href: "/admin/vendedores",
+    rotulo: "Vendedores",
+    icone: UserCog,
+    soAdmin: true,
+  },
+  {
+    href: "/admin/configuracoes",
+    rotulo: "Configuracoes",
+    icone: Settings,
+    soAdmin: true,
+  },
 ];
 
 export function Navegacao({

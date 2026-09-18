@@ -68,7 +68,10 @@ export function UploadImagens({
 
         const { error } = await supabase.storage
           .from(BUCKET_PRODUTOS)
-          .upload(caminho, arquivo, { cacheControl: "31536000", upsert: false });
+          .upload(caminho, arquivo, {
+            cacheControl: "31536000",
+            upsert: false,
+          });
 
         if (error) {
           setErro(

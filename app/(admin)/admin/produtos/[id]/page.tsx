@@ -63,7 +63,10 @@ export default async function PaginaEditarProduto({
 
         <aside className="bg-card h-fit rounded-xl border p-4 lg:sticky lg:top-20">
           <h2 className="mb-3 font-semibold">Movimentar estoque</h2>
-          <AjusteEstoque produtoId={produto.id} estoqueAtual={produto.estoque} />
+          <AjusteEstoque
+            produtoId={produto.id}
+            estoqueAtual={produto.estoque}
+          />
         </aside>
       </div>
     </>

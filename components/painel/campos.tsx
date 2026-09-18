@@ -152,7 +152,9 @@ export function CampoMarcar({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-start gap-3 rounded-lg border p-3", className)}>
+    <div
+      className={cn("flex items-start gap-3 rounded-lg border p-3", className)}
+    >
       <input
         id={nome}
         name={nome}

@@ -27,10 +27,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   ),
-  title: {
-    default: "LaserHP — Equipamentos de laser para estetica",
-    template: "%s | LaserHP",
-  },
+  /*
+   * So o `default`, sem `template`. O template de um layout pai tambem
+   * embrulha o `default` do filho — com um aqui, a home da vitrine saia como
+   * "LaserHP — Equipamentos... | LaserHP". Cada area define o proprio
+   * template: a vitrine em app/(site)/layout.tsx e o painel em
+   * app/(admin)/admin/layout.tsx.
+   */
+  title: "LaserHP — Equipamentos de laser para estetica",
   description:
     "Venda de equipamentos de laser para estetica com atendimento direto pelo WhatsApp.",
 };

@@ -12,11 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Avisos,
-  CabecalhoPagina,
-  Vazio,
-} from "@/components/painel/ui-painel";
+import { Avisos, CabecalhoPagina, Vazio } from "@/components/painel/ui-painel";
 import { exigirAdmin, listarProdutos } from "@/lib/consultas/painel";
 import { capaDoProduto } from "@/lib/imagens";
 import { formatarMoeda } from "@/lib/formatar";
@@ -70,9 +66,7 @@ export default async function PaginaProdutos(
 
       {produtos.length === 0 ? (
         <Vazio
-          titulo={
-            busca ? "Nenhum equipamento encontrado." : "Catalogo vazio."
-          }
+          titulo={busca ? "Nenhum equipamento encontrado." : "Catalogo vazio."}
           descricao={
             busca
               ? "Tente outra palavra."

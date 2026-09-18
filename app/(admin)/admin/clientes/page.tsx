@@ -79,7 +79,9 @@ export default async function PaginaClientes(
 
       {clientes.length === 0 ? (
         <Vazio
-          titulo={busca ? "Nenhum cliente encontrado." : "Nenhum cliente ainda."}
+          titulo={
+            busca ? "Nenhum cliente encontrado." : "Nenhum cliente ainda."
+          }
           descricao={
             busca
               ? "Tente outra palavra."

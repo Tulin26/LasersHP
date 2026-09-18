@@ -34,8 +34,9 @@ export default async function PaginaVendedores(
         <p className="font-medium">Para dar acesso ao painel a um vendedor:</p>
         <ol className="mt-1 list-inside list-decimal space-y-0.5">
           <li>
-            No Supabase, va em <strong>Authentication &gt; Users &gt; Add user</strong>{" "}
-            e crie o e-mail e a senha (marque <em>Auto Confirm User</em>).
+            No Supabase, va em{" "}
+            <strong>Authentication &gt; Users &gt; Add user</strong> e crie o
+            e-mail e a senha (marque <em>Auto Confirm User</em>).
           </li>
           <li>
             Rode o bloco 2 de{" "}
@@ -77,10 +78,7 @@ export default async function PaginaVendedores(
                 <span className="min-w-0">
                   <span className="font-medium">{v.nome}</span>
                   <span className="text-muted-foreground block text-xs">
-                    {[
-                      v.telefone ? formatarTelefone(v.telefone) : null,
-                      v.email,
-                    ]
+                    {[v.telefone ? formatarTelefone(v.telefone) : null, v.email]
                       .filter(Boolean)
                       .join(" · ") || "Sem contato cadastrado"}
                   </span>

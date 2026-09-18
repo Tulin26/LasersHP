@@ -7,7 +7,8 @@ import { contarPedidosNovos, exigirSessao } from "@/lib/consultas/painel";
 import { buscarConfiguracoes } from "@/lib/consultas/site";
 
 export const metadata = {
-  title: "Painel",
+  title: { default: "Painel — LaserHP", template: "%s | Painel LaserHP" },
+  // O painel nunca deve aparecer em busca.
   robots: { index: false, follow: false },
 };
 
@@ -22,7 +23,9 @@ export const metadata = {
  * navegacao entre paginas filhas. Por isso a verificacao de sessao tambem
  * aparece nas paginas que exigem admin (exigirAdmin) — nao dependa so daqui.
  */
-export default async function LayoutPainel({ children }: LayoutProps<"/admin">) {
+export default async function LayoutPainel({
+  children,
+}: LayoutProps<"/admin">) {
   const sessao = await exigirSessao();
 
   const [config, pedidosNovos] = await Promise.all([

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import { Loader2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,26 +37,38 @@ export function FormularioEncomenda({
   whatsapp: string;
 }) {
   const [estado, acao, enviando] = useActionState(criarPedido, ESTADO_INICIAL);
-  const [enviado, setEnviado] = useState(false);
 
-  // Guardamos o que o visitante digitou para montar a mensagem do WhatsApp.
-  const formRef = useRef<HTMLFormElement>(null);
-  const dadosRef = useRef({ nome: "", cidade: "", mensagem: "" });
+  /*
+   * Guardamos o que o visitante digitou para montar a mensagem do WhatsApp.
+   * Poderia ser um `ref`, mas ler ref durante a renderizacao e proibido no
+   * React: o valor pode estar defasado em relacao ao que esta na tela. Com
+   * estado, a mensagem sempre reflete o que foi digitado.
+   */
+  const [dados, setDados] = useState({ nome: "", cidade: "", mensagem: "" });
+
+  const linkWhatsApp = useMemo(
+    () =>
+      montarLinkWhatsApp(
+        whatsapp,
+        mensagemDeEncomenda({
+          produto: produtoNome,
+          nome: dados.nome,
+          cidade: dados.cidade,
+          mensagem: dados.mensagem,
+        }),
+      ),
+    [whatsapp, produtoNome, dados],
+  );
+
+  /*
+   * "Enviado" e derivado de estado.ok, nao guardado numa variavel a parte.
+   * Regra pratica do React: se um valor pode ser calculado a partir de outro,
+   * nao crie estado para ele — senao os dois podem discordar entre si.
+   */
+  const enviado = estado.ok;
 
   useEffect(() => {
-    if (!estado.ok || enviado) return;
-
-    setEnviado(true);
-
-    const link = montarLinkWhatsApp(
-      whatsapp,
-      mensagemDeEncomenda({
-        produto: produtoNome,
-        nome: dadosRef.current.nome,
-        cidade: dadosRef.current.cidade,
-        mensagem: dadosRef.current.mensagem,
-      }),
-    );
+    if (!enviado || !whatsapp) return;
 
     /*
      * O pedido JA foi gravado no banco neste ponto — o painel enxerga o lead
@@ -66,13 +78,12 @@ export function FormularioEncomenda({
      * Damos um respiro para a mensagem de sucesso aparecer na tela antes de
      * sair da pagina.
      */
-    if (whatsapp) {
-      const id = setTimeout(() => {
-        window.location.href = link;
-      }, 900);
-      return () => clearTimeout(id);
-    }
-  }, [estado.ok, enviado, produtoNome, whatsapp]);
+    const id = setTimeout(() => {
+      window.location.href = linkWhatsApp;
+    }, 900);
+
+    return () => clearTimeout(id);
+  }, [enviado, whatsapp, linkWhatsApp]);
 
   if (enviado) {
     return (
@@ -92,19 +103,7 @@ export function FormularioEncomenda({
 
         {whatsapp && (
           <Button
-            render={
-              <a
-                href={montarLinkWhatsApp(
-                  whatsapp,
-                  mensagemDeEncomenda({
-                    produto: produtoNome,
-                    nome: dadosRef.current.nome,
-                    cidade: dadosRef.current.cidade,
-                    mensagem: dadosRef.current.mensagem,
-                  }),
-                )}
-              />
-            }
+            render={<a href={linkWhatsApp} />}
             variant="outline"
             className="mt-4"
           >
@@ -117,20 +116,25 @@ export function FormularioEncomenda({
 
   return (
     <form
-      ref={formRef}
       action={acao}
-      onChange={() => {
-        const f = formRef.current;
-        if (!f) return;
-        const pegar = (nome: string) =>
-          (f.elements.namedItem(nome) as HTMLInputElement | null)?.value ?? "";
-        dadosRef.current = {
-          nome: pegar("nome"),
-          cidade: pegar("cidade"),
-          mensagem: pegar("mensagem"),
+      onChange={(evento) => {
+        /*
+         * Um unico onChange no <form> atende todos os campos (isso se chama
+         * delegacao de evento). O TypeScript tipa `evento.target` como o
+         * proprio <form>, mas em tempo de execucao ele e o campo que mudou —
+         * por isso a conversao explicita aqui.
+         */
+        const alvo = evento.target as unknown as {
+          name?: string;
+          value?: string;
         };
+
+        if (alvo.name && ["nome", "cidade", "mensagem"].includes(alvo.name)) {
+          const campo = alvo.name;
+          setDados((atual) => ({ ...atual, [campo]: alvo.value ?? "" }));
+        }
       }}
-      className="bg-card space-y-4 rounded-xl border p-5"
+      className="bg-card relative space-y-4 rounded-xl border p-5"
     >
       <div>
         <h3 className="font-semibold">Fazer encomenda</h3>
@@ -143,10 +147,8 @@ export function FormularioEncomenda({
 
       {/*
         Honeypot: escondido para gente, visivel para robo que le o HTML.
-        Nao use `display:none` puro em campo de armadilha caso queira enganar
-        robos mais espertos — aqui o conjunto (fora da tela + tabIndex -1 +
-        autoComplete off) ja resolve, sem atrapalhar leitor de tela graças ao
-        aria-hidden.
+        O conjunto (fora da tela + tabIndex -1 + autoComplete off) resolve sem
+        atrapalhar leitor de tela, gracas ao aria-hidden.
       */}
       <div
         aria-hidden="true"
