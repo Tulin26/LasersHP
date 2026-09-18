@@ -1,19 +1,23 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/tipos/database.types";
 
 /**
- * Cliente ADMINISTRATIVO: usa a chave secreta (sb_secret_...), que IGNORA o RLS.
+ * Cliente com a chave SECRETA. Ela ignora o RLS por completo.
  *
- * O import "server-only" faz o build quebrar se algum Client Component
- * importar este arquivo por engano - e a trava que impede o segredo de
- * vazar para o navegador.
+ * A primeira linha (`import "server-only"`) e a trava: se algum dia um
+ * componente com "use client" importar este arquivo, o build QUEBRA em vez
+ * de mandar a chave para o navegador. E uma protecao em tempo de compilacao,
+ * bem melhor que confiar na memoria.
  *
- * Use somente onde precisamos passar por cima do RLS de forma controlada:
- * gravar pedidos vindos da vitrine publica, importar planilha, etc.
+ * Usamos isto em exatamente um lugar: gravar o pedido da vitrine, onde
+ * precisamos conferir o limite por IP antes de inserir.
  */
 export const criarClienteAdmin = () =>
-  createClient(
+  createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SECRET_KEY!,
-    { auth: { persistSession: false, autoRefreshToken: false } },
+    {
+      auth: { persistSession: false, autoRefreshToken: false },
+    },
   );

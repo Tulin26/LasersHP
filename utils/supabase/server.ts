@@ -1,19 +1,22 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import type { Database } from "@/lib/tipos/database.types";
 
 /**
- * Cliente Supabase para uso no SERVIDOR (Server Components, Server Actions
- * e Route Handlers). Le e escreve os cookies de sessao do usuario logado.
+ * Cliente do Supabase para codigo que roda no SERVIDOR: Server Components,
+ * Server Actions e Route Handlers.
  *
- * Continua usando a chave publicavel de proposito: assim o RLS do banco
- * continua valendo e cada usuario so enxerga o que a policy permite.
+ * Usa a chave publicavel (a mesma do navegador) de proposito — assim o RLS
+ * continua valendo e cada consulta enxerga apenas o que o usuario logado
+ * pode ver. A sessao vem dos cookies da requisicao.
  *
- * Observacao de Next 16: `cookies()` e assincrono, por isso a funcao e `async`.
+ * E `async` porque no Next 16 o `cookies()` passou a ser assincrono: use
+ * sempre `await criarClienteServidor()`.
  */
 export const criarClienteServidor = async () => {
   const cookieStore = await cookies();
 
-  return createServerClient(
+  return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
@@ -27,8 +30,11 @@ export const criarClienteServidor = async () => {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Server Components nao podem escrever cookies. Pode ignorar:
-            // quem renova a sessao e o proxy.ts a cada requisicao.
+            /*
+             * Server Components nao podem escrever cookies — o HTML ja pode
+             * ter comecado a ser enviado. Nao e problema: quem renova o token
+             * e grava o cookie e o proxy.ts, que roda antes da pagina.
+             */
           }
         },
       },

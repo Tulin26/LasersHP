@@ -273,6 +273,63 @@ after insert or update or delete on public.venda_itens
 for each row execute function public.recalcular_total_venda();
 
 -- ---------------------------------------------------------------------------
+-- 5.1 BAIXA E DEVOLUÇÃO DE ESTOQUE
+--
+-- Por que uma função separada: registrar_venda é "security invoker", ou seja,
+-- roda com as permissões de quem chamou — e o vendedor NÃO tem policy de
+-- update em produtos (só o admin tem). Sem isto, a venda de um vendedor
+-- atualizaria 0 linhas e morreria com "estoque insuficiente" mesmo com o
+-- estoque cheio.
+--
+-- Esta função é "security definer": ela roda com os poderes do dono e ignora
+-- o RLS. O portão de entrada é o eh_equipe() da primeira linha — é ele que
+-- garante que só quem tem acesso ao painel consegue mexer no estoque.
+--
+-- O "and estoque >= -p_delta" dentro do UPDATE é o que torna a baixa segura
+-- com dois pedidos simultâneos: o Postgres tranca a linha do produto, o
+-- segundo UPDATE só enxerga o estoque já descontado e, se não sobrar, não
+-- afeta nenhuma linha — em vez de gravar um estoque negativo.
+-- ---------------------------------------------------------------------------
+create or replace function public.ajustar_estoque(p_produto_id uuid, p_delta integer)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_linhas integer;
+begin
+  if not public.eh_equipe() then
+    raise exception 'SEM_PERMISSAO' using errcode = 'P0001';
+  end if;
+
+  if p_delta = 0 then
+    return;
+  end if;
+
+  if p_delta < 0 then
+    update public.produtos
+       set estoque = estoque + p_delta
+     where id = p_produto_id
+       and estoque >= -p_delta;
+  else
+    update public.produtos
+       set estoque = estoque + p_delta
+     where id = p_produto_id;
+  end if;
+
+  get diagnostics v_linhas = row_count;
+
+  if v_linhas = 0 then
+    raise exception 'ESTOQUE_INSUFICIENTE:%', p_produto_id using errcode = 'P0001';
+  end if;
+end;
+$$;
+
+revoke execute on function public.ajustar_estoque(uuid, integer) from public;
+grant  execute on function public.ajustar_estoque(uuid, integer) to authenticated;
+
+-- ---------------------------------------------------------------------------
 -- 6. BAIXA DE ESTOQUE SEM CONDIÇÃO DE CORRIDA
 --
 -- O segredo está no "and estoque >= quantidade" dentro do UPDATE: o Postgres
@@ -308,7 +365,6 @@ set search_path = public
 as $$
 declare
   v_item    record;
-  v_linhas  integer;
   v_venda   public.vendas;
 begin
   if p_itens is null or jsonb_array_length(p_itens) = 0 then
@@ -338,16 +394,9 @@ begin
     end if;
 
     if p_baixar_estoque then
-      update public.produtos
-         set estoque = estoque - v_item.quantidade
-       where id = v_item.produto_id
-         and estoque >= v_item.quantidade;
-
-      get diagnostics v_linhas = row_count;
-
-      if v_linhas = 0 then
-        raise exception 'ESTOQUE_INSUFICIENTE:%', v_item.produto_id using errcode = 'P0001';
-      end if;
+      -- delta negativo = saída. A função é quem tranca a linha e recusa
+      -- a venda quando o estoque não cobre a quantidade.
+      perform public.ajustar_estoque(v_item.produto_id, -v_item.quantidade);
     end if;
 
     insert into public.venda_itens (venda_id, produto_id, quantidade, valor_unitario)
@@ -392,9 +441,8 @@ begin
 
   for v_item in select produto_id, quantidade from public.venda_itens where venda_id = p_venda_id
   loop
-    update public.produtos
-       set estoque = estoque + v_item.quantidade
-     where id = v_item.produto_id;
+    -- delta positivo = devolução ao estoque
+    perform public.ajustar_estoque(v_item.produto_id, v_item.quantidade);
   end loop;
 
   update public.vendas
