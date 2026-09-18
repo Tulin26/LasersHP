@@ -43,5 +43,3 @@ next-env.d.ts
 # permitir versionar o exemplo de variaveis de ambiente
 !.env.example
 
-# ferramentas locais de IA
-CLAUDE.md
