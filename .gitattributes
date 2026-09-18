@@ -1,0 +1,12 @@
+# Normaliza fim de linha: o repositorio guarda sempre LF,
+# independente de quem commitou estar no Windows ou no Linux.
+* text=auto eol=lf
+
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.avif binary
+*.ico  binary
+*.xlsx binary
