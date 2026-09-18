@@ -35,7 +35,7 @@ Estão documentadas em [`.env.example`](.env.example). A regra que importa:
 
 - `NEXT_PUBLIC_*` é embutida no JavaScript enviado ao navegador — qualquer
   pessoa consegue ler.
-- `SUPABASE_SERVICE_ROLE_KEY` **não** tem esse prefixo de propósito: ela ignora
+- `SUPABASE_SECRET_KEY` **não** tem esse prefixo de propósito: ela ignora
   as regras de segurança do banco e só pode ser usada em código de servidor.
 
 ## Banco de dados
