@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { formatarTelefone } from "@/lib/formatar";
 import { montarLinkWhatsApp } from "@/lib/whatsapp";
@@ -33,7 +32,13 @@ export function Rodape({ config }: { config: Configuracoes }) {
 
   return (
     <footer className="mt-auto border-t">
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-3">
+      {/*
+        Duas colunas, nao tres: a coluna "Navegacao" que existia aqui subiu
+        para o menu do cabecalho, junto com Equipamentos e Sobre. Manter os
+        mesmos links nos dois lugares so criaria o risco de um sair do ar e o
+        outro nao.
+      */}
+      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2">
         <div>
           <h2 className="font-semibold">{config.nome_negocio}</h2>
           <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
@@ -88,31 +93,6 @@ export function Rodape({ config }: { config: Configuracoes }) {
                 </a>
               </li>
             )}
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-medium">Navegacao</h3>
-          <ul className="text-muted-foreground mt-2 space-y-2 text-sm">
-            <li>
-              <Link href="/" className="hover:text-foreground transition">
-                Inicio
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/equipamentos"
-                className="hover:text-foreground transition"
-              >
-                Equipamentos
-              </Link>
-            </li>
-            <li>
-              {/* Entrada discreta do painel: quem trabalha sabe onde fica. */}
-              <Link href="/login" className="hover:text-foreground transition">
-                Area restrita
-              </Link>
-            </li>
           </ul>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CabecalhoPagina } from "@/components/painel/ui-painel";
 import { FormularioProduto } from "@/components/painel/formulario-produto";
@@ -39,12 +39,12 @@ export default async function PaginaEditarProduto({
         {produto.ativo && (
           <Button
             render={
-              <Link href={`/equipamentos/${produto.slug}`} target="_blank" />
+              <Link href={`/equipamentos/${produto.slug}`} />
             }
             variant="outline"
             size="sm"
           >
-            <ExternalLink className="size-4" aria-hidden="true" />
+            <Store className="size-4" aria-hidden="true" />
             Ver na vitrine
           </Button>
         )}

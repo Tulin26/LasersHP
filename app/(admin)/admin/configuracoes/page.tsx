@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CabecalhoPagina } from "@/components/painel/ui-painel";
 import { FormularioConfiguracoes } from "@/components/painel/formulario-configuracoes";
@@ -18,11 +18,11 @@ export default async function PaginaConfiguracoes() {
         descricao="Contato, textos do site e dados de compartilhamento."
       >
         <Button
-          render={<Link href="/" target="_blank" />}
+          render={<Link href="/" />}
           variant="outline"
           size="sm"
         >
-          <ExternalLink className="size-4" aria-hidden="true" />
+          <Store className="size-4" aria-hidden="true" />
           Ver site
         </Button>
       </CabecalhoPagina>

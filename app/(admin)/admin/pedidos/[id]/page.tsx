@@ -101,10 +101,7 @@ export default async function PaginaPedido({
                 )}
                 <Button
                   render={
-                    <Link
-                      href={`/equipamentos/${pedido.produtos.slug}`}
-                      target="_blank"
-                    />
+                    <Link href={`/equipamentos/${pedido.produtos.slug}`} />
                   }
                   variant="ghost"
                   size="sm"

@@ -6,10 +6,22 @@ import { montarLinkWhatsApp, mensagemGenerica } from "@/lib/whatsapp";
 /**
  * Cabecalho da vitrine.
  *
- * Mobile-first: no celular sobram o logo e o botao de WhatsApp; os links de
- * navegacao so aparecem a partir de `sm:`. Como o site inteiro tem tres
- * paginas, um menu sanduiche seria mais atrito do que ajuda.
+ * A lista de links fica numa constante so e e usada duas vezes: na linha do
+ * logo (computador) e numa segunda linha rolavel (celular). Assim nao existe
+ * a chance de alguem adicionar uma pagina num lugar e esquecer do outro.
+ *
+ * Nenhum destes links abre aba nova. Navegacao dentro do proprio site deve
+ * acontecer na mesma aba — o <Link> do Next ainda troca so o conteudo que
+ * mudou, sem recarregar a pagina inteira.
  */
+
+const LINKS = [
+  { href: "/", texto: "Inicio" },
+  { href: "/equipamentos", texto: "Equipamentos" },
+  { href: "/#sobre", texto: "Sobre" },
+  { href: "/login", texto: "Area restrita" },
+];
+
 export function Cabecalho({
   nomeNegocio,
   whatsapp,
@@ -30,19 +42,19 @@ export function Cabecalho({
           <span className="text-base sm:text-lg">{nomeNegocio}</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm sm:flex">
-          <Link
-            href="/equipamentos"
-            className="text-muted-foreground hover:text-foreground transition"
-          >
-            Equipamentos
-          </Link>
-          <Link
-            href="/#sobre"
-            className="text-muted-foreground hover:text-foreground transition"
-          >
-            Sobre
-          </Link>
+        <nav
+          aria-label="Navegacao principal"
+          className="hidden items-center gap-6 text-sm sm:flex"
+        >
+          {LINKS.map(({ href, texto }) => (
+            <Link
+              key={href}
+              href={href}
+              className="text-muted-foreground hover:text-foreground transition"
+            >
+              {texto}
+            </Link>
+          ))}
         </nav>
 
         {whatsapp ? (
@@ -67,6 +79,27 @@ export function Cabecalho({
           </Button>
         )}
       </div>
+
+      {/*
+        No celular a navegacao desce para uma segunda linha, que rola de lado
+        se nao couber. Antes ela simplesmente sumia abaixo de `sm`, e como a
+        maior parte do acesso vem do link do Instagram — ou seja, do celular —
+        era justamente quem mais precisava que ficava sem menu.
+      */}
+      <nav
+        aria-label="Navegacao principal"
+        className="flex gap-1 overflow-x-auto border-t px-3 py-2 text-sm sm:hidden"
+      >
+        {LINKS.map(({ href, texto }) => (
+          <Link
+            key={href}
+            href={href}
+            className="text-muted-foreground hover:bg-muted hover:text-foreground shrink-0 rounded-lg px-3 py-1.5 transition"
+          >
+            {texto}
+          </Link>
+        ))}
+      </nav>
     </header>
   );
 }

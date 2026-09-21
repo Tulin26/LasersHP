@@ -69,7 +69,7 @@ export default async function LayoutPainel({
 
           <div className="flex shrink-0 items-center gap-2">
             <Button
-              render={<Link href="/" target="_blank" />}
+              render={<Link href="/" />}
               variant="ghost"
               size="sm"
             >
