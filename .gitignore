@@ -42,5 +42,8 @@ next-env.d.ts
 .env*
 .vercel
 
+# estado local da CLI do Supabase (especifico desta maquina)
+supabase/.temp
+
 # o exemplo, sem segredo nenhum, fica versionado (precisa vir DEPOIS do .env*)
 !.env.example
