@@ -7,7 +7,12 @@ import {
   CartaoIndicador,
   Vazio,
 } from "@/components/painel/ui-painel";
-import { exigirSessao, montarDashboard } from "@/lib/consultas/painel";
+import { CarrosselVendas } from "@/components/painel/carrossel-vendas";
+import {
+  exigirSessao,
+  listarVendasRecentes,
+  montarDashboard,
+} from "@/lib/consultas/painel";
 import { formatarMoeda } from "@/lib/formatar";
 
 /**
@@ -21,7 +26,13 @@ import { formatarMoeda } from "@/lib/formatar";
 export default async function PaginaPainel(props: PageProps<"/admin">) {
   const searchParams = await props.searchParams;
   const sessao = await exigirSessao();
-  const resumo = await montarDashboard();
+
+  // As duas consultas saem ao mesmo tempo. Em sequencia, a segunda so
+  // comecaria depois que a primeira voltasse do banco.
+  const [resumo, vendasRecentes] = await Promise.all([
+    montarDashboard(),
+    listarVendasRecentes(12),
+  ]);
 
   const mes = new Date().toLocaleDateString("pt-BR", {
     month: "long",
@@ -96,6 +107,30 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
           destaque={resumo.estoqueBaixo.length > 0}
         />
       </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* Ultimas vendas                                                 */}
+      {/* ------------------------------------------------------------- */}
+      <section className="bg-card rounded-xl border p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="font-semibold">Ultimas vendas</h2>
+            <p className="text-muted-foreground text-sm">
+              As mais recentes, de qualquer periodo. Clique para abrir.
+            </p>
+          </div>
+
+          <Button
+            render={<Link href="/admin/vendas" />}
+            variant="ghost"
+            size="sm"
+          >
+            Ver todas
+          </Button>
+        </div>
+
+        <CarrosselVendas vendas={vendasRecentes} />
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* ----------------------------------------------------------- */}

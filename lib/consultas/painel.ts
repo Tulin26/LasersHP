@@ -7,6 +7,7 @@ import type {
   PedidoCompleto,
   Perfil,
   Produto,
+  StatusVenda,
   Vendedor,
   VendaCompleta,
 } from "@/lib/tipos/database.types";
@@ -270,6 +271,60 @@ export async function buscarVenda(id: string): Promise<VendaCompleta | null> {
     .eq("id", id)
     .maybeSingle<VendaCompleta>();
   return data ?? null;
+}
+
+/**
+ * Formato enxuto usado pelo carrossel do painel.
+ *
+ * Por que um tipo proprio em vez de reaproveitar VendaCompleta: o carrossel
+ * e um Client Component, e tudo que um servidor passa para o cliente viaja
+ * pela rede dentro do HTML. Mandar a venda inteira (todos os itens, todos os
+ * campos do cliente) so para mostrar quatro informacoes num card seria peso
+ * morto em cada carregamento do painel.
+ */
+export type VendaResumida = {
+  id: string;
+  data: string;
+  total: number;
+  status: StatusVenda;
+  cliente: string;
+  vendedor: string;
+  /** Ex.: "2x Laser 808nm, 1x IPL Pro" */
+  itens: string;
+};
+
+/**
+ * Ultimas vendas registradas, sem recorte de periodo.
+ *
+ * Continua valendo o RLS: se um vendedor abrir o painel, o carrossel mostra
+ * apenas as vendas dele. Nao existe filtro no codigo para isso — a regra
+ * mora no banco.
+ */
+export async function listarVendasRecentes(
+  limite = 12,
+): Promise<VendaResumida[]> {
+  const supabase = await criarClienteServidor();
+
+  const { data } = await supabase
+    .from("vendas")
+    .select(SELECT_VENDA_COMPLETA)
+    .order("data", { ascending: false })
+    .order("criado_em", { ascending: false })
+    .limit(limite)
+    .returns<VendaCompleta[]>();
+
+  return (data ?? []).map((v) => ({
+    id: v.id,
+    data: v.data,
+    total: Number(v.total ?? 0),
+    status: v.status,
+    cliente: v.clientes?.nome ?? "Cliente removido",
+    vendedor: v.vendedores?.nome ?? "—",
+    itens:
+      v.venda_itens
+        .map((i) => `${i.quantidade}x ${i.produtos?.nome ?? "Equipamento"}`)
+        .join(", ") || "Sem itens",
+  }));
 }
 
 // ---------------------------------------------------------------------------
