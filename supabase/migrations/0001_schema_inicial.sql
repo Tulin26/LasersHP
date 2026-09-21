@@ -616,18 +616,49 @@ create policy "itens seguem a venda (exclusao)" on public.venda_itens
 -- ---------------------------------------------------------------------------
 -- 9. STORAGE — fotos dos equipamentos
 -- ---------------------------------------------------------------------------
-insert into storage.buckets (id, name, public)
-values ('produtos', 'produtos', true)
-on conflict (id) do nothing;
+-- ATENCAO ao bloco abaixo: ele esta dentro de um DO com tratamento de erro,
+-- e isso NAO e firula.
+--
+-- O SQL Editor do Supabase roda o script inteiro numa unica transacao. Em
+-- alguns projetos a tabela storage.objects pertence a outro dono, e o
+-- "create policy" nela falha com "must be owner of table objects". Sem este
+-- tratamento, aquele erro la no fim desfaria TUDO que veio antes — as oito
+-- tabelas, as funcoes, o RLS — e voce veria um banco vazio sem entender por
+-- que.
+--
+-- Um bloco DO com "exception" cria uma subtransacao: se falhar aqui dentro,
+-- so este pedaco volta atras. O resto do schema fica de pe, e a mensagem
+-- diz o que fazer na mao.
 
-create policy "fotos de produtos sao publicas" on storage.objects
-  for select to anon, authenticated using (bucket_id = 'produtos');
+do $storage$
+begin
+  insert into storage.buckets (id, name, public)
+  values ('produtos', 'produtos', true)
+  on conflict (id) do nothing;
 
-create policy "admin envia fotos" on storage.objects
-  for insert to authenticated with check (bucket_id = 'produtos' and public.eh_admin());
+  -- drop antes do create para o arquivo poder ser rodado mais de uma vez
+  drop policy if exists "fotos de produtos sao publicas" on storage.objects;
+  drop policy if exists "admin envia fotos"              on storage.objects;
+  drop policy if exists "admin atualiza fotos"           on storage.objects;
+  drop policy if exists "admin apaga fotos"              on storage.objects;
 
-create policy "admin atualiza fotos" on storage.objects
-  for update to authenticated using (bucket_id = 'produtos' and public.eh_admin());
+  create policy "fotos de produtos sao publicas" on storage.objects
+    for select to anon, authenticated using (bucket_id = 'produtos');
 
-create policy "admin apaga fotos" on storage.objects
-  for delete to authenticated using (bucket_id = 'produtos' and public.eh_admin());
+  create policy "admin envia fotos" on storage.objects
+    for insert to authenticated with check (bucket_id = 'produtos' and public.eh_admin());
+
+  create policy "admin atualiza fotos" on storage.objects
+    for update to authenticated using (bucket_id = 'produtos' and public.eh_admin());
+
+  create policy "admin apaga fotos" on storage.objects
+    for delete to authenticated using (bucket_id = 'produtos' and public.eh_admin());
+
+  raise notice 'Storage: bucket "produtos" e as 4 policies criados.';
+
+exception
+  when insufficient_privilege then
+    raise notice 'AVISO: sem permissao para mexer em storage.objects neste projeto. O RESTO DO SCHEMA FOI CRIADO NORMALMENTE. Faca na mao: Storage > New bucket > nome "produtos" > marque Public; depois Storage > produtos > Policies > crie as 4 politicas (leitura para todos; insert, update e delete para authenticated).';
+  when others then
+    raise notice 'AVISO no trecho de Storage (%): %. O resto do schema foi criado normalmente.', sqlstate, sqlerrm;
+end $storage$;
