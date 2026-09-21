@@ -1,3 +1,4 @@
+import { isValidElement } from "react";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
@@ -43,11 +44,38 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  nativeButton,
+  render,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+  /*
+   * ADAPTACAO NOSSA (nao veio do shadcn).
+   *
+   * O Base UI assume que o elemento final e um <button> de verdade
+   * (nativeButton = true por padrao). Quando usamos `render` para o botao
+   * virar um <Link> ou um <a> — o caso de todo botao que navega — isso deixa
+   * de ser verdade, e ele avisa no console:
+   *
+   *   "A component that acts as a button expected a native <button>
+   *    because the `nativeButton` prop is true."
+   *
+   * O aviso esta certo: <a> e <button> tem comportamentos diferentes de
+   * teclado e de formulario, e o Base UI precisa saber com qual esta lidando
+   * para decidir o que emular.
+   *
+   * Daria para escrever `nativeButton={false}` nos ~25 lugares onde isso
+   * acontece, mas bastaria esquecer num para o aviso voltar. Entao a deducao
+   * fica aqui: se o `render` troca o <button> por outro elemento, avisamos o
+   * Base UI. Passar `nativeButton` na mao continua vencendo a deducao.
+   */
+  const ehBotaoNativo =
+    nativeButton ?? (isValidElement(render) ? render.type === "button" : true);
+
   return (
     <ButtonPrimitive
       data-slot="button"
+      nativeButton={ehBotaoNativo}
+      render={render}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
