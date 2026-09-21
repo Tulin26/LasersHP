@@ -49,7 +49,7 @@ export default async function PaginaPedido({
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         {/* ----------------------------------------------------------- */}
         <div className="space-y-6">
-          <section className="bg-card rounded-xl border p-4">
+          <section className="min-w-0 bg-card rounded-xl border p-4">
             <h2 className="font-semibold">Contato</h2>
 
             <dl className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -88,7 +88,7 @@ export default async function PaginaPedido({
             </dl>
           </section>
 
-          <section className="bg-card rounded-xl border p-4">
+          <section className="min-w-0 bg-card rounded-xl border p-4">
             <h2 className="font-semibold">Equipamento de interesse</h2>
 
             {pedido.produtos ? (
@@ -118,7 +118,7 @@ export default async function PaginaPedido({
           </section>
 
           {pedido.mensagem && (
-            <section className="bg-card rounded-xl border p-4">
+            <section className="min-w-0 bg-card rounded-xl border p-4">
               <h2 className="font-semibold">Mensagem</h2>
               <p className="text-muted-foreground mt-3 text-sm leading-relaxed whitespace-pre-line">
                 {pedido.mensagem}
@@ -128,7 +128,7 @@ export default async function PaginaPedido({
         </div>
 
         {/* ----------------------------------------------------------- */}
-        <aside className="bg-card h-fit space-y-4 rounded-xl border p-4 lg:sticky lg:top-20">
+        <aside className="min-w-0 bg-card h-fit space-y-4 rounded-xl border p-4 lg:sticky lg:top-20">
           <div>
             <h2 className="mb-2 font-semibold">Situacao</h2>
             <SeletorStatusPedido id={pedido.id} status={pedido.status} />

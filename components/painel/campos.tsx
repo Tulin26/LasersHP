@@ -160,7 +160,7 @@ export function CampoMarcar({
         name={nome}
         type="checkbox"
         defaultChecked={marcado}
-        className="accent-primary mt-0.5 size-4"
+        className="accent-primary mt-0.5 size-5"
       />
       <div className="grid gap-0.5 leading-tight">
         <Label htmlFor={nome} className="cursor-pointer">

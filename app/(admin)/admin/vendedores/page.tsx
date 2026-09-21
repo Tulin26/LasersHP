@@ -40,7 +40,7 @@ export default async function PaginaVendedores(
           </li>
           <li>
             Rode o bloco 2 de{" "}
-            <code className="rounded bg-blue-100 px-1">
+            <code className="rounded bg-blue-100 px-1 break-all">
               supabase/migrations/0002_criar_admin.sql
             </code>{" "}
             trocando o e-mail e o nome.

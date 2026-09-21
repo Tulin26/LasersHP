@@ -86,12 +86,12 @@ export default async function PaginaCliente({
       </CabecalhoPagina>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="bg-card rounded-xl border p-4">
+        <section className="min-w-0 bg-card rounded-xl border p-4">
           <h2 className="mb-4 font-semibold">Dados cadastrais</h2>
           <FormularioCliente cliente={cliente} />
         </section>
 
-        <section className="bg-card h-fit rounded-xl border p-4">
+        <section className="min-w-0 bg-card h-fit rounded-xl border p-4">
           <h2 className="font-semibold">Historico de compras</h2>
 
           {vendas.length === 0 ? (

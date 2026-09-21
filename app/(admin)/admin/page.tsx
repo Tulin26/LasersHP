@@ -75,7 +75,7 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
           </p>
           <p className="text-foreground mt-1">
             Voce conseguiu entrar porque o login fica no schema{" "}
-            <code className="bg-muted rounded px-1">auth</code>, que o Supabase
+            <code className="bg-muted rounded px-1 break-all">auth</code>, que o Supabase
             cria sozinho. As tabelas do sistema ainda nao existem.
           </p>
           <ol className="text-foreground mt-2 list-inside list-decimal space-y-1">
@@ -84,14 +84,14 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
             </li>
             <li>
               Cole o arquivo{" "}
-              <code className="bg-muted rounded px-1">
+              <code className="bg-muted rounded px-1 break-all">
                 supabase/migrations/0001_schema_inicial.sql
               </code>{" "}
               inteiro e clique em <strong>Run</strong>.
             </li>
             <li>
               Depois rode o{" "}
-              <code className="bg-muted rounded px-1">
+              <code className="bg-muted rounded px-1 break-all">
                 supabase/migrations/0003_dados_demo.sql
               </code>
               , que configura seu acesso e cria dados de exemplo.
@@ -104,7 +104,7 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
             <p className="font-medium">Seu usuario ainda nao tem perfil.</p>
             <p className="mt-1">
               As tabelas existem, mas falta a linha que diz quem voce e. Rode o{" "}
-              <code className="rounded bg-amber-100 px-1">
+              <code className="rounded bg-amber-100 px-1 break-all">
                 supabase/migrations/0003_dados_demo.sql
               </code>{" "}
               no SQL Editor do Supabase. Ate la o RLS bloqueia a leitura de
@@ -148,7 +148,7 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
       {/* ------------------------------------------------------------- */}
       {/* Ultimas vendas                                                 */}
       {/* ------------------------------------------------------------- */}
-      <section className="bg-card rounded-xl border p-4">
+      <section className="min-w-0 bg-card rounded-xl border p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2 className="font-semibold">Ultimas vendas</h2>
@@ -171,7 +171,7 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* ----------------------------------------------------------- */}
-        <section className="bg-card rounded-xl border p-4">
+        <section className="min-w-0 bg-card rounded-xl border p-4">
           <h2 className="font-semibold">Vendas por vendedor</h2>
 
           {resumo.porVendedor.length === 0 ? (
@@ -211,7 +211,7 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
         </section>
 
         {/* ----------------------------------------------------------- */}
-        <section className="bg-card rounded-xl border p-4">
+        <section className="min-w-0 bg-card rounded-xl border p-4">
           <h2 className="font-semibold">Mais vendidos no mes</h2>
 
           {resumo.maisVendidos.length === 0 ? (
@@ -245,7 +245,7 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
       </div>
 
       {/* ------------------------------------------------------------- */}
-      <section className="bg-card rounded-xl border p-4">
+      <section className="min-w-0 bg-card rounded-xl border p-4">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-semibold">Estoque baixo</h2>
           {sessao.ehAdmin && (

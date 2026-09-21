@@ -168,7 +168,13 @@ export default async function PaginaProdutos(
                             name="ativo"
                             value={String(p.ativo)}
                           />
-                          <button type="submit" title="Clique para alternar">
+                          {/* py-1 aumenta a area de toque: a etiqueta tem 20px
+                              de altura, pequeno demais para o dedo no celular. */}
+                          <button
+                            type="submit"
+                            title="Clique para alternar"
+                            className="py-1"
+                          >
                             <Badge
                               variant={p.ativo ? "secondary" : "outline"}
                               className="cursor-pointer"

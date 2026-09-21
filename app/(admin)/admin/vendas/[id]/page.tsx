@@ -103,7 +103,7 @@ export default async function PaginaVenda({
       )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        <section className="bg-card overflow-x-auto rounded-xl border">
+        <section className="min-w-0 bg-card overflow-x-auto rounded-xl border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -159,7 +159,7 @@ export default async function PaginaVenda({
           </div>
         </section>
 
-        <aside className="bg-card h-fit space-y-4 rounded-xl border p-4">
+        <aside className="min-w-0 bg-card h-fit space-y-4 rounded-xl border p-4">
           <div>
             <p className="text-muted-foreground text-xs">Cliente</p>
             {venda.clientes ? (
