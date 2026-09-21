@@ -42,6 +42,29 @@ Devem aparecer 8 tabelas: `clientes`, `configuracoes`, `pedidos`, `perfis`,
 
 ## 2. Criar o seu usuario de administrador
 
+> **Atalho para este projeto:** o usuario `admin@gmail.com` (senha
+> `SENHA-REMOVIDA-DO-HISTORICO`) **ja foi criado** em Authentication > Users. Se for usar ele,
+> pule direto para o passo 2.1 abaixo e rode o `0003_dados_demo.sql`, que ja
+> cuida do perfil, do WhatsApp e ainda cria dados de exemplo.
+>
+> A senha tem 6 caracteres porque o Supabase recusa menos que isso
+> (`weak_password: Password should be at least 6 characters`).
+
+### 2.1 Caminho rapido — com dados de exemplo
+
+**SQL Editor** > cole o [`0003_dados_demo.sql`](supabase/migrations/0003_dados_demo.sql)
+inteiro > **Run**. Ele faz tudo de uma vez:
+
+- da o papel de admin para `admin@gmail.com`;
+- grava o WhatsApp `(17) 99728-5058` e os textos do site;
+- cria 7 equipamentos, 5 clientes, 3 vendedores, 7 vendas e 3 pedidos.
+
+No fim do arquivo ha um bloco comentado que apaga **so** a demonstracao,
+preservando o admin e as configuracoes, para quando o sistema entrar em uso
+de verdade.
+
+### 2.2 Caminho manual — sem dados de exemplo
+
 1. No Supabase: **Authentication** > **Users** > **Add user** >
    *Create new user*.
 2. Preencha e-mail e senha e **marque `Auto Confirm User`** — sem isso o

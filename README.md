@@ -78,9 +78,18 @@ aplicados pelo SQL Editor do Supabase, **nesta ordem**:
 1. `0001_schema_inicial.sql` — tabelas, indices, funcoes, RLS e bucket de
    imagens. Rode o arquivo inteiro de uma vez.
 2. Crie seu usuario em *Authentication > Users > Add user* (marque
-   **Auto Confirm User**).
-3. `0002_criar_admin.sql` — troque o e-mail pelo seu e rode. Sem isso o login
-   funciona mas o painel fica vazio, porque o RLS nao reconhece o usuario.
+   **Auto Confirm User**). A senha precisa ter no minimo 6 caracteres — e
+   regra do Supabase, nao da aplicacao.
+3. Escolha **um** dos dois:
+   - `0003_dados_demo.sql` — configura o admin `admin@gmail.com`, grava o
+     WhatsApp do negocio e cria equipamentos, clientes, vendedores, vendas e
+     pedidos de exemplo, para voce ver o sistema funcionando. Traz no fim um
+     bloco comentado que apaga so a demonstracao.
+   - `0002_criar_admin.sql` — so o acesso, sem dado nenhum. Troque o e-mail
+     pelo seu antes de rodar.
+
+Sem o passo 3 o login funciona mas o painel fica vazio, porque o RLS nao
+reconhece o usuario.
 
 Todas as tabelas tem Row Level Security ligado. A vitrine enxerga apenas
 produtos ativos e as configuracoes; o restante exige login. O vendedor so
