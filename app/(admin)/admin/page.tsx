@@ -60,21 +60,58 @@ export default async function PaginaPainel(props: PageProps<"/admin">) {
       />
 
       {/*
-        Sem linha na tabela perfis o RLS bloqueia tudo e as telas aparecem
-        vazias sem explicacao. Este aviso evita o susto de achar que quebrou.
+        Dois problemas diferentes, duas mensagens diferentes.
+
+        O login vive no schema `auth`, que o Supabase cria sozinho — por isso
+        da para entrar no painel mesmo sem nenhuma tabela nossa existir. Se a
+        mensagem fosse so "usuario sem perfil", ela mandaria rodar o script do
+        admin, que falharia com "relation public.perfis does not exist" e
+        deixaria a pessoa girando em falso.
       */}
-      {semPerfil && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-          <p className="font-medium">Seu usuario ainda nao tem perfil.</p>
-          <p className="mt-1">
-            Rode o arquivo{" "}
-            <code className="rounded bg-amber-100 px-1">
-              supabase/migrations/0002_criar_admin.sql
-            </code>{" "}
-            no SQL Editor do Supabase, trocando o e-mail pelo seu. Ate la o
-            banco vai bloquear a leitura de todas as tabelas.
+      {sessao.bancoAusente ? (
+        <div className="border-destructive/30 bg-destructive/10 text-destructive rounded-lg border p-4 text-sm">
+          <p className="font-medium">
+            As tabelas ainda nao foram criadas no Supabase.
           </p>
+          <p className="text-foreground mt-1">
+            Voce conseguiu entrar porque o login fica no schema{" "}
+            <code className="bg-muted rounded px-1">auth</code>, que o Supabase
+            cria sozinho. As tabelas do sistema ainda nao existem.
+          </p>
+          <ol className="text-foreground mt-2 list-inside list-decimal space-y-1">
+            <li>
+              No Supabase, abra <strong>SQL Editor &gt; New query</strong>.
+            </li>
+            <li>
+              Cole o arquivo{" "}
+              <code className="bg-muted rounded px-1">
+                supabase/migrations/0001_schema_inicial.sql
+              </code>{" "}
+              inteiro e clique em <strong>Run</strong>.
+            </li>
+            <li>
+              Depois rode o{" "}
+              <code className="bg-muted rounded px-1">
+                supabase/migrations/0003_dados_demo.sql
+              </code>
+              , que configura seu acesso e cria dados de exemplo.
+            </li>
+          </ol>
         </div>
+      ) : (
+        semPerfil && (
+          <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+            <p className="font-medium">Seu usuario ainda nao tem perfil.</p>
+            <p className="mt-1">
+              As tabelas existem, mas falta a linha que diz quem voce e. Rode o{" "}
+              <code className="rounded bg-amber-100 px-1">
+                supabase/migrations/0003_dados_demo.sql
+              </code>{" "}
+              no SQL Editor do Supabase. Ate la o RLS bloqueia a leitura de
+              todas as tabelas, e as telas aparecem vazias.
+            </p>
+          </div>
+        )
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -34,7 +34,26 @@ export type Sessao = {
   ehAdmin: boolean;
   /** id na tabela vendedores, quando o usuario for um vendedor com login */
   vendedorId: string | null;
+  /**
+   * true quando as tabelas ainda nao existem no Supabase.
+   *
+   * Isso e diferente de "usuario sem perfil", e a diferenca importa para o
+   * recado que aparece na tela: sem tabela nenhuma, o arquivo a rodar e o
+   * 0001; com as tabelas de pe e sem a linha em `perfis`, e o 0003 (ou o
+   * 0002). Sem essa distincao a mensagem manda o usuario rodar um arquivo
+   * que vai falhar com "relation public.perfis does not exist".
+   *
+   * Por que a autenticacao funciona mesmo assim: login e sessao vivem no
+   * schema `auth`, que o Supabase cria sozinho. As tabelas do sistema ficam
+   * no schema `public`, que e o que os nossos scripts criam.
+   */
+  bancoAusente: boolean;
 };
+
+/** PGRST205 = PostgREST nao achou a tabela; 42P01 = o Postgres nao achou. */
+function ehTabelaAusente(codigo: string | undefined): boolean {
+  return codigo === "PGRST205" || codigo === "42P01";
+}
 
 export const buscarSessao = cache(async (): Promise<Sessao | null> => {
   const supabase = await criarClienteServidor();
@@ -47,7 +66,7 @@ export const buscarSessao = cache(async (): Promise<Sessao | null> => {
 
   if (!user) return null;
 
-  const { data: perfil } = await supabase
+  const { data: perfil, error: erroPerfil } = await supabase
     .from("perfis")
     .select("*")
     .eq("id", user.id)
@@ -65,6 +84,7 @@ export const buscarSessao = cache(async (): Promise<Sessao | null> => {
     perfil: perfil ?? null,
     ehAdmin: perfil?.papel === "admin",
     vendedorId: vendedor?.id ?? null,
+    bancoAusente: ehTabelaAusente(erroPerfil?.code),
   };
 });
 
