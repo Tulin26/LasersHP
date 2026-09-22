@@ -1,13 +1,11 @@
 "use server";
 
-import { createHash } from "node:crypto";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { criarClienteServidor } from "@/utils/supabase/server";
 import { criarClienteAdmin } from "@/utils/supabase/admin";
 import { schemaPedido, schemaStatusPedido } from "@/lib/validacoes/pedido";
 import { apenasDigitos } from "@/lib/formatar";
-import { exigirVariavel } from "@/lib/ambiente";
+import { hashDoIP } from "@/lib/seguranca";
 import {
   falha,
   sucesso,
@@ -15,54 +13,6 @@ import {
   type EstadoFormulario,
 } from "@/lib/acoes/tipos";
 
-/**
- * Identifica o visitante sem guardar o IP em texto puro.
- *
- * Guardar IP e dado pessoal (LGPD). O hash resolve: serve para contar quantos
- * envios vieram da mesma origem, mas nao da para voltar dele ao IP original.
- * O "tempero" usa a chave secreta para que nem quem tivesse o banco na mao
- * conseguisse testar IPs um por um.
- */
-async function calcularHashDoIP(): Promise<string> {
-  const cabecalhos = await headers();
-
-  // Na Vercel o IP real vem no x-forwarded-for; o primeiro da lista e o
-  // visitante, os seguintes sao os proxies pelo caminho.
-  const ip =
-    cabecalhos.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    cabecalhos.get("x-real-ip") ||
-    "desconhecido";
-
-  /*
-   * O "tempero" (salt) impede que alguem com acesso de leitura a tabela
-   * descubra o IP de um visitante testando hashes de IPs conhecidos — sem
-   * ele, sha256("189.1.2.3") e sempre o mesmo valor e da para montar uma
-   * tabela de consulta com os poucos bilhoes de IPv4 que existem.
-   *
-   * Duas coisas mudaram aqui:
-   *
-   * 1. Antes havia um `?? "laserhp"` no fim. Esse texto esta num repositorio
-   *    PUBLICO, entao se a variavel faltasse o tempero virava algo que
-   *    qualquer um pode ler — ou seja, nenhum tempero.
-   *
-   * 2. Antes o tempero era a propria SUPABASE_SECRET_KEY. Funcionava, mas
-   *    prendia uma coisa na outra: no dia em que voce trocasse a chave
-   *    secreta (o que se deve fazer de tempos em tempos), TODO hash gravado
-   *    deixaria de bater com o novo e o limite de 5 pedidos por hora
-   *    zeraria para todo mundo de uma vez. Com uma variavel propria, girar a
-   *    chave do Supabase nao mexe no controle de spam.
-   *
-   * O `??` na SUPABASE_SECRET_KEY continua como rede de seguranca para nao
-   * derrubar o formulario da vitrine se a SALT_HASH_IP ainda nao tiver sido
-   * cadastrada na Vercel.
-   */
-  const tempero = exigirVariavel(
-    process.env.SALT_HASH_IP ?? process.env.SUPABASE_SECRET_KEY,
-    "SALT_HASH_IP",
-  );
-
-  return createHash("sha256").update(`${tempero}:${ip}`).digest("hex");
-}
 
 /**
  * Recebe a encomenda da vitrine.
@@ -105,7 +55,7 @@ export async function criarPedido(
   }
 
   const d = analise.data;
-  const ipHash = await calcularHashDoIP();
+  const ipHash = await hashDoIP();
 
   /*
    * Usamos a chave secreta aqui, e nao a publicavel, por um motivo concreto:

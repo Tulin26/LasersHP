@@ -1,4 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { exigirVariavel } from "@/lib/ambiente";
 
@@ -15,8 +15,49 @@ import { exigirVariavel } from "@/lib/ambiente";
  * a autorizacao de verdade continua sendo o RLS do banco + a verificacao
  * de usuario dentro de cada pagina do /admin.
  */
-export async function atualizarSessao(request: NextRequest) {
-  let respostaSupabase = NextResponse.next({ request });
+/**
+ * Endurece as opcoes do cookie de sessao.
+ *
+ * O @supabase/ssr grava o cookie SEM httpOnly por padrao, porque a biblioteca
+ * foi feita para que o cliente do navegador tambem consiga ler a sessao. Nesta
+ * aplicacao isso nao e mais necessario: o unico uso do cliente de navegador
+ * era o upload de fotos, e ele passou a receber um token de uso unico do
+ * servidor (lib/acoes/upload.ts).
+ *
+ * O que estava em jogo: aquele cookie carrega o access token E o refresh
+ * token. Sem httpOnly, qualquer script rodando na pagina — inclusive um
+ * injetado por uma falha de XSS — podia ler `document.cookie` e levar a
+ * sessao inteira embora, de forma duradoura. Com httpOnly o cookie continua
+ * sendo enviado nas requisicoes, mas o JavaScript da pagina nao o enxerga.
+ *
+ *   httpOnly — fora do alcance do JavaScript
+ *   secure   — so trafega por HTTPS (desligado no localhost, que e http)
+ *   sameSite lax — nao acompanha requisicoes vindas de outro site, o que
+ *                  barra CSRF sem quebrar a navegacao normal por link
+ */
+function cookieSeguro(opcoes: CookieOptions): CookieOptions {
+  return {
+    ...opcoes,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  };
+}
+
+export async function atualizarSessao(
+  request: NextRequest,
+  /**
+   * Cabecalhos da requisicao ja com o nonce do CSP. Precisam ser repassados
+   * ao NextResponse.next, senao o Next nao enxerga o nonce e os scripts que
+   * ele gera saem sem o carimbo — o navegador bloquearia todos eles.
+   */
+  cabecalhosDaRequisicao?: Headers,
+) {
+  const requisicao = cabecalhosDaRequisicao
+    ? { headers: cabecalhosDaRequisicao }
+    : request;
+
+  let respostaSupabase = NextResponse.next({ request: requisicao });
 
   const supabase = createServerClient(
     exigirVariavel(
@@ -36,9 +77,9 @@ export async function atualizarSessao(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
-          respostaSupabase = NextResponse.next({ request });
+          respostaSupabase = NextResponse.next({ request: requisicao });
           cookiesToSet.forEach(({ name, value, options }) =>
-            respostaSupabase.cookies.set(name, value, options),
+            respostaSupabase.cookies.set(name, value, cookieSeguro(options)),
           );
         },
       },

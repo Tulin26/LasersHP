@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { criarClienteNavegador } from "@/utils/supabase/client";
+import { prepararUploadDeImagem, removerImagem } from "@/lib/acoes/upload";
 import { urlDaImagem } from "@/lib/imagens";
 import {
   BUCKET_PRODUTOS,
@@ -61,28 +62,39 @@ export function UploadImagens({
           continue;
         }
 
-        // Nome unico: duas fotos chamadas "frente.jpg" nao podem se
-        // sobrescrever no bucket.
-        const extensao = arquivo.name.split(".").pop()?.toLowerCase() ?? "jpg";
-        const caminho = `${crypto.randomUUID()}.${extensao}`;
+        /*
+         * O envio acontece em dois tempos.
+         *
+         * Primeiro o servidor confere que quem esta pedindo e admin e devolve
+         * um token que vale para UM caminho e por pouco tempo. So depois o
+         * arquivo sai daqui, direto para o Supabase, usando esse token.
+         *
+         * O navegador nao tem mais uma sessao do Supabase capaz de escrever no
+         * Storage: o cookie virou httpOnly e o JavaScript desta pagina nao o
+         * enxerga. Essa e a troca — uma permissao estreita e descartavel no
+         * lugar de uma credencial ampla guardada no navegador.
+         *
+         * O arquivo continua sem passar pela Vercel.
+         */
+        const preparo = await prepararUploadDeImagem(arquivo.type);
 
-        const { error } = await supabase.storage
-          .from(BUCKET_PRODUTOS)
-          .upload(caminho, arquivo, {
-            cacheControl: "31536000",
-            upsert: false,
-          });
-
-        if (error) {
-          setErro(
-            error.message.includes("row-level security")
-              ? "Seu usuario nao tem permissao para enviar fotos (so admin)."
-              : `Falha ao enviar "${arquivo.name}": ${error.message}`,
-          );
+        if (!preparo.ok) {
+          setErro(preparo.erro);
           continue;
         }
 
-        novos.push(caminho);
+        const { error } = await supabase.storage
+          .from(BUCKET_PRODUTOS)
+          .uploadToSignedUrl(preparo.caminho, preparo.token, arquivo, {
+            cacheControl: "31536000",
+          });
+
+        if (error) {
+          setErro(`Falha ao enviar "${arquivo.name}": ${error.message}`);
+          continue;
+        }
+
+        novos.push(preparo.caminho);
       }
 
       if (novos.length > 0) setCaminhos((atual) => [...atual, ...novos]);
@@ -97,9 +109,8 @@ export function UploadImagens({
 
     // Apaga do bucket para nao acumular arquivo orfao ocupando a cota.
     // Se falhar nao tem problema: a foto ja saiu do produto de qualquer jeito.
-    void criarClienteNavegador()
-      .storage.from(BUCKET_PRODUTOS)
-      .remove([caminho]);
+    // Tambem passa pelo servidor, que confere se quem pediu e admin.
+    void removerImagem(caminho);
   }
 
   /** Move a foto para a primeira posicao — ela vira a capa do catalogo. */

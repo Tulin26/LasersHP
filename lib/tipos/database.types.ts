@@ -322,6 +322,15 @@ export type Database = {
       eh_equipe: { Args: Record<never, never>; Returns: boolean };
       meu_vendedor_id: { Args: Record<never, never>; Returns: string | null };
       pode_enviar_pedido: { Args: { p_ip_hash: string }; Returns: boolean };
+      /** Freio de forca bruta no login. So o servidor chama (chave secreta). */
+      pode_tentar_login: {
+        Args: { p_ip_hash: string; p_email_hash: string };
+        Returns: boolean;
+      };
+      registrar_tentativa_login: {
+        Args: { p_ip_hash: string; p_email_hash: string; p_sucesso: boolean };
+        Returns: undefined;
+      };
       ajustar_estoque: {
         Args: { p_produto_id: string; p_delta: number };
         Returns: undefined;
