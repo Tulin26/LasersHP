@@ -42,17 +42,23 @@ Devem aparecer 8 tabelas: `clientes`, `configuracoes`, `pedidos`, `perfis`,
 
 ## 2. Criar o seu usuario de administrador
 
-> **Atalho para este projeto:** o usuario `admin@gmail.com` (senha
-> `SENHA-REMOVIDA-DO-HISTORICO`) **ja foi criado** em Authentication > Users. Se for usar ele,
-> pule direto para o passo 2.1 abaixo e rode o `0003_dados_demo.sql`, que ja
-> cuida do perfil, do WhatsApp e ainda cria dados de exemplo.
+> **Antes de qualquer coisa:** crie o seu usuario com uma senha SUA. Este
+> repositorio e publico — nenhuma senha real pode ser escrita aqui, nem em
+> comentario, nem em exemplo. O painel fica exposto na internet, entao uma
+> senha que apareca no README e o mesmo que nao ter senha.
 >
-> A senha tem 6 caracteres porque o Supabase recusa menos que isso
-> (`weak_password: Password should be at least 6 characters`).
+> A senha precisa de no minimo 6 caracteres, senao o Supabase recusa com
+> `weak_password: Password should be at least 6 characters`. Use bem mais que
+> isso: o `admin@gmail.com` e um e-mail obvio, e a senha e a unica barreira.
 
 ### 2.1 Caminho rapido — com dados de exemplo
 
-**SQL Editor** > cole o [`0003_dados_demo.sql`](supabase/migrations/0003_dados_demo.sql)
+Primeiro crie o login: **Authentication** > **Users** > **Add user** >
+*Create new user*, com o e-mail `admin@gmail.com`, uma senha sua e a caixa
+**Auto Confirm User** marcada. O script abaixo da o papel de admin para esse
+e-mail, mas nao cria a conta — quem cria contas e o Supabase.
+
+Depois, no **SQL Editor** > cole o [`0003_dados_demo.sql`](supabase/migrations/0003_dados_demo.sql)
 inteiro > **Run**. Ele faz tudo de uma vez:
 
 - da o papel de admin para `admin@gmail.com`;
@@ -87,7 +93,7 @@ npm install
 npm run dev
 ```
 
-Abra http://localhost:3000, clique em **Area restrita** no rodape e entre com
+Abra http://localhost:3000, clique em **Area restrita** no menu do topo e entre com
 o e-mail e a senha do passo 2. Cadastre um equipamento em
 **Equipamentos > Novo equipamento** e confira se ele aparece na vitrine.
 

@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "@/lib/tipos/database.types";
+import { exigirVariavel } from "@/lib/ambiente";
 
 /**
  * Cliente do Supabase para codigo que roda no SERVIDOR: Server Components,
@@ -17,8 +18,14 @@ export const criarClienteServidor = async () => {
   const cookieStore = await cookies();
 
   return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    exigirVariavel(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      "NEXT_PUBLIC_SUPABASE_URL",
+    ),
+    exigirVariavel(
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    ),
     {
       cookies: {
         getAll() {

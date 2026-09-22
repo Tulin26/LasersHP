@@ -1,5 +1,6 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/lib/tipos/database.types";
+import { exigirVariavel } from "@/lib/ambiente";
 
 /**
  * Cliente do Supabase para o NAVEGADOR (Client Components).
@@ -14,6 +15,12 @@ import type { Database } from "@/lib/tipos/database.types";
  */
 export const criarClienteNavegador = () =>
   createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    exigirVariavel(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      "NEXT_PUBLIC_SUPABASE_URL",
+    ),
+    exigirVariavel(
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    ),
   );

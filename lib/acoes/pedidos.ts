@@ -7,6 +7,7 @@ import { criarClienteServidor } from "@/utils/supabase/server";
 import { criarClienteAdmin } from "@/utils/supabase/admin";
 import { schemaPedido, schemaStatusPedido } from "@/lib/validacoes/pedido";
 import { apenasDigitos } from "@/lib/formatar";
+import { exigirVariavel } from "@/lib/ambiente";
 import {
   falha,
   sucesso,
@@ -32,7 +33,34 @@ async function calcularHashDoIP(): Promise<string> {
     cabecalhos.get("x-real-ip") ||
     "desconhecido";
 
-  const tempero = process.env.SUPABASE_SECRET_KEY ?? "laserhp";
+  /*
+   * O "tempero" (salt) impede que alguem com acesso de leitura a tabela
+   * descubra o IP de um visitante testando hashes de IPs conhecidos — sem
+   * ele, sha256("189.1.2.3") e sempre o mesmo valor e da para montar uma
+   * tabela de consulta com os poucos bilhoes de IPv4 que existem.
+   *
+   * Duas coisas mudaram aqui:
+   *
+   * 1. Antes havia um `?? "laserhp"` no fim. Esse texto esta num repositorio
+   *    PUBLICO, entao se a variavel faltasse o tempero virava algo que
+   *    qualquer um pode ler — ou seja, nenhum tempero.
+   *
+   * 2. Antes o tempero era a propria SUPABASE_SECRET_KEY. Funcionava, mas
+   *    prendia uma coisa na outra: no dia em que voce trocasse a chave
+   *    secreta (o que se deve fazer de tempos em tempos), TODO hash gravado
+   *    deixaria de bater com o novo e o limite de 5 pedidos por hora
+   *    zeraria para todo mundo de uma vez. Com uma variavel propria, girar a
+   *    chave do Supabase nao mexe no controle de spam.
+   *
+   * O `??` na SUPABASE_SECRET_KEY continua como rede de seguranca para nao
+   * derrubar o formulario da vitrine se a SALT_HASH_IP ainda nao tiver sido
+   * cadastrada na Vercel.
+   */
+  const tempero = exigirVariavel(
+    process.env.SALT_HASH_IP ?? process.env.SUPABASE_SECRET_KEY,
+    "SALT_HASH_IP",
+  );
+
   return createHash("sha256").update(`${tempero}:${ip}`).digest("hex");
 }
 

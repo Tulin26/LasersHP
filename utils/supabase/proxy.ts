@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { exigirVariavel } from "@/lib/ambiente";
 
 /**
  * Renova a sessao do Supabase a cada requisicao e faz a checagem otimista
@@ -18,8 +19,14 @@ export async function atualizarSessao(request: NextRequest) {
   let respostaSupabase = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    exigirVariavel(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      "NEXT_PUBLIC_SUPABASE_URL",
+    ),
+    exigirVariavel(
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    ),
     {
       cookies: {
         getAll() {

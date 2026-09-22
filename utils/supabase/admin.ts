@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/tipos/database.types";
+import { exigirVariavel } from "@/lib/ambiente";
 
 /**
  * Cliente com a chave SECRETA. Ela ignora o RLS por completo.
@@ -15,8 +16,14 @@ import type { Database } from "@/lib/tipos/database.types";
  */
 export const criarClienteAdmin = () =>
   createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!,
+    exigirVariavel(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      "NEXT_PUBLIC_SUPABASE_URL",
+    ),
+    exigirVariavel(
+      process.env.SUPABASE_SECRET_KEY,
+      "SUPABASE_SECRET_KEY",
+    ),
     {
       auth: { persistSession: false, autoRefreshToken: false },
     },
