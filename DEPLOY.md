@@ -180,7 +180,63 @@ Daqui em diante todo `git push` na branch `main` publica sozinho.
 
 ---
 
-## 7. Quando algo der errado
+## 7. Trocar as chaves (rotacao)
+
+Uma chave que vazou nao volta a ser secreta. Se ela apareceu num print, num
+commit, num grupo de WhatsApp ou numa conversa com uma ferramenta de IA,
+o unico conserto e gerar outra e revogar a antiga. Reescrever o historico do
+git **nao resolve**: o GitHub continua servindo o commit antigo por alguns
+dias se alguem souber o codigo dele.
+
+### 7.1 Chave secreta do Supabase (`SUPABASE_SECRET_KEY`)
+
+E a mais grave das tres: ela ignora o RLS por completo, entao quem a tem le
+e escreve qualquer tabela como se fosse dono do banco.
+
+**A ordem importa.** Gere a nova e coloque-a nos dois lugares ANTES de
+revogar a velha — enquanto as duas existem, nada fica fora do ar.
+
+1. **Supabase** > **Project Settings** > **API Keys** > aba *Secret keys* >
+   **Create new secret key**. Copie o valor (ele so aparece uma vez).
+2. **Na sua maquina:** abra o `.env.local` e troque o valor de
+   `SUPABASE_SECRET_KEY`. Reinicie o `npm run dev` — variavel de ambiente
+   so e lida quando o processo sobe.
+3. **Na Vercel:** *Project Settings* > *Environment Variables* > a linha
+   `SUPABASE_SECRET_KEY` > **Edit** > cole a nova > **Save**.
+4. **Redeploy:** *Deployments* > o ultimo > menu `...` > **Redeploy**.
+   Sem isso a Vercel continua rodando com a chave antiga em memoria.
+5. **Teste antes de revogar:** abra o site, mande uma encomenda pelo
+   formulario e confirme que ela aparece em **Pedidos** no painel. Esse
+   caminho e o unico que usa a chave secreta — se ele funciona, a troca deu
+   certo.
+6. **So agora** volte ao Supabase e apague a chave antiga.
+
+### 7.2 Chave publicavel (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
+
+Esta **nao e um segredo** e nao precisa ser rotacionada por ter sido vista.
+Ela vai dentro do JavaScript que qualquer visitante baixa — e assim por
+projeto. Quem protege os dados e o RLS: com essa chave sozinha da para ler
+`produtos` e `configuracoes` e gravar em `pedidos`, e mais nada. Clientes,
+vendas, vendedores e perfis voltam vazios.
+
+### 7.3 Senha do painel
+
+Trocar em **Authentication** > **Users** > o usuario > `...` >
+**Reset password**. Nunca escreva a senha num arquivo do repositorio: este
+repositorio e publico.
+
+### 7.4 `SALT_HASH_IP`
+
+Nao e uma credencial de acesso — e o tempero do hash que guarda o IP de quem
+manda encomenda, para o hash nao poder ser revertido por forca bruta.
+Trocar e inofensivo: o unico efeito e que o limite de 5 pedidos por hora
+reinicia. Por isso ela e separada da chave secreta, e nao a propria: assim
+rotacionar o Supabase nao zera o controle de spam.
+
+
+---
+
+## 8. Quando algo der errado
 
 | Sintoma | Causa mais provavel |
 | --- | --- |
@@ -194,7 +250,7 @@ Daqui em diante todo `git push` na branch `main` publica sozinho.
 
 ---
 
-## 8. Limites do plano gratuito
+## 9. Limites do plano gratuito
 
 O projeto foi feito para caber no gratuito dos dois servicos, sem processo em
 segundo plano e sem tarefa longa. Vale saber onde estao os tetos:
