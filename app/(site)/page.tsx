@@ -35,15 +35,28 @@ export default async function PaginaInicial() {
   // await em sequencia, a segunda so comecaria depois da primeira terminar.
   const [config, destaques, catalogo] = await Promise.all([
     buscarConfiguracoes(),
-    // Seis, nao tres: o trilho mostra varios ao mesmo tempo em perspectiva e
-    // da a volta no fim. A grade de reserva continua usando so os tres
-    // primeiros.
-    listarDestaques(6),
+    // Pede TODOS os destaques, nao um punhado.
+    //
+    // O trilho so consegue mostrar quem tem foto, e o filtro acontece aqui
+    // embaixo, em JavaScript. Pedindo poucos ao banco, a conta virava "os N
+    // primeiros em ordem alfabetica, e destes, os que tem foto" — um destaque
+    // com foto no fim do alfabeto nunca chegava. Foi o que aconteceu com o
+    // Therapy EC: os aparelhos DMC comecam com E e com T, e o corte no meio
+    // deixava so dois com foto, abaixo do minimo do trilho.
+    //
+    // A grade de reserva continua usando os tres primeiros desta mesma lista,
+    // entao o comportamento dela nao muda.
+    listarDestaques(48),
     listarProdutosPublicos(),
   ]);
 
   // O trilho depende de foto. Sem imagem nao ha o que colocar no palco.
-  const comFoto = destaques.filter((p) => capaDoProduto(p.imagens));
+  // O teto de oito e pelos tracinhos de navegacao: o trilho em si so desenha
+  // uma janela de cinco pecas por vez, mas uma fileira com vinte tracinhos
+  // deixaria de ser navegacao e viraria ruido.
+  const comFoto = destaques
+    .filter((p) => capaDoProduto(p.imagens))
+    .slice(0, 8);
 
   // "ambas" conta para as duas frentes: um CO2 fracionado interessa tanto a
   // clinica de estetica quanto ao consultorio que trata ferida.
