@@ -97,6 +97,11 @@ export type Database = {
           modelo: string | null;
           descricao: string | null;
           indicacoes: string | null;
+          aplicacao: string | null;
+          potencia: string | null;
+          comprimento_onda: string | null;
+          emite_vermelho: boolean;
+          emite_infravermelho: boolean;
           preco: number | null;
           preco_sob_consulta: boolean;
           estoque: number;
@@ -114,6 +119,11 @@ export type Database = {
           modelo?: string | null;
           descricao?: string | null;
           indicacoes?: string | null;
+          aplicacao?: string | null;
+          potencia?: string | null;
+          comprimento_onda?: string | null;
+          emite_vermelho?: boolean;
+          emite_infravermelho?: boolean;
           preco?: number | null;
           preco_sob_consulta?: boolean;
           estoque?: number;
@@ -128,6 +138,11 @@ export type Database = {
           modelo?: string | null;
           descricao?: string | null;
           indicacoes?: string | null;
+          aplicacao?: string | null;
+          potencia?: string | null;
+          comprimento_onda?: string | null;
+          emite_vermelho?: boolean;
+          emite_infravermelho?: boolean;
           preco?: number | null;
           preco_sob_consulta?: boolean;
           estoque?: number;

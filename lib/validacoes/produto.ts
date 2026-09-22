@@ -25,6 +25,15 @@ export const schemaProduto = z
     descricao: textoOpcional(4000),
     indicacoes: textoOpcional(4000),
 
+    // Ficha tecnica: e o que a vitrine alinha em coluna ao lado do aparelho.
+    // Tudo opcional de proposito — um cadastro pela metade nao pode impedir o
+    // equipamento de entrar no ar; a vitrine simplesmente omite a linha vazia.
+    aplicacao: textoOpcional(40),
+    potencia: textoOpcional(40),
+    comprimento_onda: textoOpcional(60),
+    emite_vermelho: booleanoDeFormulario,
+    emite_infravermelho: booleanoDeFormulario,
+
     preco: z
       .union([dinheiro, z.literal("")])
       .optional()

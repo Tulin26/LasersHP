@@ -1,7 +1,8 @@
 # LaserHP
 
-Site de encomendas e painel administrativo (mini ERP) para venda de
-equipamentos de laser para estetica.
+Site de encomendas e painel administrativo (mini ERP) para venda de aparelhos
+de laserterapia da linha DMC, usados em odontologia, fisioterapia, enfermagem,
+estetica e terapia capilar.
 
 O projeto e unico: a vitrine publica e o painel vivem na mesma aplicacao
 Next.js, separados por grupos de rota.
@@ -20,9 +21,13 @@ Next.js, separados por grupos de rota.
 
 ## O que o sistema faz
 
-**Vitrine publica**
+**Vitrine publica** (tema escuro; o painel segue claro)
 
-- Home com textos editaveis pelo painel e equipamentos em destaque
+- Home com o trilho de aparelhos: os destaques apoiados numa mesma bancada, o
+  do meio aceso com o brilho vermelho do laser, arrastavel com o dedo, o mouse
+  ou as setas do teclado. Ao lado dele, a ficha tecnica que o profissional
+  compara antes de comprar
+- Textos da home editaveis pelo painel, logo abaixo do trilho
 - Catalogo com busca por nome e modelo
 - Pagina de cada equipamento, com galeria de fotos e indicacoes de uso
 - Formulario de encomenda: grava o pedido no banco **e** redireciona para o
@@ -81,6 +86,22 @@ aplicados pelo SQL Editor do Supabase, **nesta ordem**:
    **Auto Confirm User**).
 3. `0002_criar_admin.sql` — troque o e-mail pelo seu e rode. Sem isso o login
    funciona mas o painel fica vazio, porque o RLS nao reconhece o usuario.
+4. `0003_ficha_tecnica.sql` — soma em `produtos` os campos que a home mostra
+   ao lado do aparelho: aplicacao, potencia, comprimento de onda e as duas
+   emissoes.
+5. `0004_catalogo_dmc.sql` — cadastra os quatro aparelhos da linha DMC
+   (Therapy IA EC, Therapy EC, E-LIB e E-light Cluster) ja apontando para os
+   recortes em `public/aparelhos/`.
+
+Os dois ultimos sao seguros de rodar mais de uma vez: o `0003` usa
+`add column if not exists` e o `0004` termina com `on conflict do nothing`.
+
+> **Sobre a ficha tecnica.** Os numeros vieram da documentacao do fabricante e
+> da distribuidora oficial (Technodontus), e cada um esta creditado em
+> comentario dentro do `0004`. O **comprimento de onda do Therapy IA EC ficou
+> em branco** porque a DMC nao publica esse dado — a linha simplesmente some
+> da vitrine ate alguem preencher no painel. Nao copie do Therapy EC por
+> semelhanca: confira na ficha impressa do aparelho.
 
 Todas as tabelas tem Row Level Security ligado. A vitrine enxerga apenas
 produtos ativos e as configuracoes; o restante exige login. O vendedor so
@@ -106,6 +127,8 @@ components/
   site/              componentes da vitrine
   painel/            componentes do painel
   ui/                shadcn/ui
+public/
+  aparelhos/         recortes dos aparelhos usados no trilho da home
 lib/
   acoes/             Server Actions (escrita)
   consultas/         leituras dos Server Components
@@ -176,3 +199,24 @@ falhas conhecidas justamente na **leitura** de arquivos — que e exatamente o
 que a importacao faz. O CDN e o canal oficial do projeto e entrega a 0.20.3,
 ja corrigida. O `package-lock.json` guarda o endereco e o hash de integridade,
 entao `npm ci` na Vercel baixa sempre o mesmo arquivo verificado.
+
+## As fotos do trilho
+
+Os quatro arquivos em `public/aparelhos/` foram recortados das artes oficiais
+da DMC: fundo removido, aparelho apoiado na base de uma tela de 1000x1500.
+
+Duas decisoes que valem conhecer:
+
+- **A tela e igual para os quatro, e o aparelho ocupa dentro dela a altura que
+  tem em relacao aos outros.** O E-LIB e de pulso: ele sai com 61% da altura,
+  contra 100% das canetas Therapy. Se cada arquivo saisse "cortado justo", o
+  navegador normalizaria todos pela altura da caixa e um aparelho de pulso
+  apareceria do tamanho de uma caneta de 20 cm.
+- **O caminho comeca com `/`.** A funcao `urlDaImagem()` entende tres formas:
+  URL completa (`https://...`), caminho da pasta `public/` (comecando com `/`)
+  e caminho do Supabase Storage (qualquer outra coisa). E por isso que estes
+  recortes convivem com as fotos que o painel envia.
+
+Para trocar por fotos proprias, o ideal sao **PNGs com fundo transparente**,
+com o aparelho apoiado na base da imagem. Basta substituir os arquivos ou
+apontar o campo de fotos do produto para as novas imagens no painel.

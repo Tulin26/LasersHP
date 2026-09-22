@@ -51,8 +51,15 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function LayoutSite({ children }: LayoutProps<"/">) {
   const config = await buscarConfiguracoes();
 
+  // `dark noite` liga o tema escuro SO na vitrine; o painel continua claro.
+  //   - `dark` e a classe que o shadcn ja usava: faz os componentes de
+  //     interface trocarem para as variantes escuras;
+  //   - `noite` vem depois no globals.css e sobrescreve as cores dele pela
+  //     paleta do projeto (preto frio, titanio, osso).
+  // O `flex flex-1 flex-col` repete o que o <body> fazia, para o rodape
+  // continuar colado embaixo em pagina curta.
   return (
-    <>
+    <div className="dark noite bg-background text-foreground flex flex-1 flex-col">
       <Cabecalho nomeNegocio={config.nome_negocio} whatsapp={config.whatsapp} />
 
       <main className="flex-1">{children}</main>
@@ -63,6 +70,6 @@ export default async function LayoutSite({ children }: LayoutProps<"/">) {
         numero={config.whatsapp}
         nomeNegocio={config.nome_negocio}
       />
-    </>
+    </div>
   );
 }

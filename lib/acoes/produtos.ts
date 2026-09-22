@@ -52,6 +52,11 @@ export async function salvarProduto(
     modelo: String(formData.get("modelo") ?? ""),
     descricao: String(formData.get("descricao") ?? ""),
     indicacoes: String(formData.get("indicacoes") ?? ""),
+    aplicacao: String(formData.get("aplicacao") ?? ""),
+    potencia: String(formData.get("potencia") ?? ""),
+    comprimento_onda: String(formData.get("comprimento_onda") ?? ""),
+    emite_vermelho: formData.get("emite_vermelho") ?? undefined,
+    emite_infravermelho: formData.get("emite_infravermelho") ?? undefined,
     preco: String(formData.get("preco") ?? ""),
     preco_sob_consulta: formData.get("preco_sob_consulta") ?? undefined,
     estoque: String(formData.get("estoque") ?? "0"),
@@ -80,6 +85,11 @@ export async function salvarProduto(
     modelo: d.modelo ?? null,
     descricao: d.descricao ?? null,
     indicacoes: d.indicacoes ?? null,
+    aplicacao: d.aplicacao ?? null,
+    potencia: d.potencia ?? null,
+    comprimento_onda: d.comprimento_onda ?? null,
+    emite_vermelho: d.emite_vermelho,
+    emite_infravermelho: d.emite_infravermelho,
     // Guardamos o preco mesmo com "sob consulta" marcado: quem decide o
     // que a vitrine mostra e a flag, nao a ausencia do valor. Assim, ao
     // desmarcar, o valor volta em vez de ter que ser digitado de novo.

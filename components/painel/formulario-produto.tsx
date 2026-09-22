@@ -87,6 +87,62 @@ export function FormularioProduto({ produto }: { produto?: Produto }) {
         />
       </section>
 
+      {/*
+        Ficha tecnica: e exatamente o que a vitrine alinha em coluna ao lado do
+        aparelho, no lugar onde a A24 poe diretor e elenco. Campo vazio some da
+        vitrine em vez de aparecer em branco, entao da para preencher com calma.
+      */}
+      <section className="bg-card space-y-4 rounded-xl border p-4">
+        <h2 className="font-semibold">Ficha tecnica</h2>
+        <p className="text-muted-foreground -mt-2 text-xs">
+          Aparece ao lado do aparelho na home. O que estiver vazio nao e
+          exibido.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <CampoTexto
+            nome="aplicacao"
+            rotulo="Aplicacao"
+            valor={produto?.aplicacao}
+            placeholder="Ex.: Caneta, Cluster, Pulso"
+            ajuda="Como o aparelho encosta no paciente."
+            erro={estado.erros?.aplicacao?.[0]}
+          />
+          <CampoTexto
+            nome="potencia"
+            rotulo="Potencia"
+            valor={produto?.potencia}
+            placeholder="Ex.: 100 mW ou 8 x 100 mW"
+            ajuda="Com a unidade, como vem na ficha do fabricante."
+            erro={estado.erros?.potencia?.[0]}
+          />
+        </div>
+
+        <CampoTexto
+          nome="comprimento_onda"
+          rotulo="Comprimento de onda"
+          valor={produto?.comprimento_onda}
+          placeholder="Ex.: 660 nm e 808 nm"
+          ajuda="Os valores que o profissional compara entre um aparelho e outro."
+          erro={estado.erros?.comprimento_onda?.[0]}
+        />
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <CampoMarcar
+            nome="emite_vermelho"
+            rotulo="Emite laser vermelho"
+            ajuda="Luz visivel. Acende o ponto vermelho na ficha."
+            marcado={produto?.emite_vermelho ?? false}
+          />
+          <CampoMarcar
+            nome="emite_infravermelho"
+            rotulo="Emite infravermelho"
+            ajuda="Luz invisivel. Acende o ponto azul na ficha."
+            marcado={produto?.emite_infravermelho ?? false}
+          />
+        </div>
+      </section>
+
       <section className="bg-card space-y-4 rounded-xl border p-4">
         <h2 className="font-semibold">Preco e estoque</h2>
 

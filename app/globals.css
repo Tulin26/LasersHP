@@ -152,6 +152,165 @@
   --sidebar-ring: oklch(0.72 0.12 320);
 }
 
+/* ===========================================================================
+   A VITRINE NO ESCURO
+   ===========================================================================
+   Por que a vitrine e escura e o painel nao: as fotos dos aparelhos sao
+   recortes de artes fotografadas sobre preto. Num site branco cada recorte
+   briga com a pagina. No escuro eles se integram, e o vermelho do laser —
+   que e a unica cor forte do projeto — fica legivel.
+
+   A regra da paleta: a pagina inteira e monocromatica, do preto ao osso.
+   O VERMELHO NUNCA PREENCHE nada — nem botao, nem texto, nem borda. Ele so
+   aparece como LUZ EMITIDA, porque e assim no aparelho de verdade: vermelho
+   so sai da abertura. Quem quiser mexer nas cores daqui, mantenha essa regra;
+   e ela que impede a pagina de virar "tema escuro com detalhe colorido".
+
+   O azul (--infra) tem um uso unico: o pontinho que marca "infravermelho" na
+   ficha. Infravermelho e invisivel; o ponto azul e so a convencao para dizer
+   que existe uma segunda emissao que o olho nao ve.
+--------------------------------------------------------------------------- */
+.noite {
+  --noite: oklch(0.13 0.008 250);   /* o fundo, preto com um traco frio */
+  --bancada: oklch(0.19 0.008 250); /* a superficie onde as bases apoiam */
+  --titanio: oklch(0.79 0.012 250); /* rotulos e reguas — o cinza do Therapy IA */
+  --osso: oklch(0.96 0.004 90);     /* texto, branco levemente quente */
+  --feixe: oklch(0.62 0.25 27);     /* SO luz: brilho e poca. Nunca preenchimento */
+  --infra: oklch(0.62 0.2 262);     /* so o ponto de infravermelho da ficha */
+
+  /* Os tokens do shadcn apontam para a paleta acima, entao todo componente
+     de interface ja existente entra no tom sem precisar ser reescrito. */
+  --background: var(--noite);
+  --foreground: var(--osso);
+  --card: var(--bancada);
+  --card-foreground: var(--osso);
+  --popover: var(--bancada);
+  --popover-foreground: var(--osso);
+  --primary: var(--osso);
+  --primary-foreground: var(--noite);
+  --secondary: oklch(0.24 0.008 250);
+  --secondary-foreground: var(--osso);
+  --muted: oklch(0.24 0.008 250);
+  --muted-foreground: oklch(0.7 0.012 250);
+  --accent: oklch(0.24 0.008 250);
+  --accent-foreground: var(--osso);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: var(--titanio);
+  --radius: 0.5rem;
+
+  font-family: var(--fonte-corpo), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Nome do aparelho: Archivo esticada na largura, como letra gravada em
+   instrumento. `font-stretch` e o que aciona o eixo `wdth` da fonte variavel. */
+.gravado {
+  font-family: var(--fonte-titulo), ui-sans-serif, system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Rotulos da ficha: miudos, espacados, em titanio. */
+.rotulo {
+  font-family: var(--fonte-corpo), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--titanio);
+}
+
+/* ---------------------------------------------------------------------------
+   O palco e a bancada
+--------------------------------------------------------------------------- */
+.palco {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(70rem 40rem at 62% 78%, oklch(0.26 0.01 250 / 0.85), transparent 62%),
+    var(--noite);
+}
+
+/* A linha do chao. Os aparelhos apoiam todos nela, como na foto que a propria
+   DMC faz: os quatro enfileirados sobre a mesma mesa. */
+.bancada::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.16) 30%, oklch(1 0 0 / 0.16) 70%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   As pecas do trilho
+--------------------------------------------------------------------------- */
+.peca {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  /* Escala a partir da base: assim todos os aparelhos ficam apoiados na mesma
+     linha, por maior ou menor que cada um apareca. */
+  transform-origin: bottom center;
+  will-change: transform;
+  transition:
+    transform 620ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 620ms ease,
+    opacity 620ms ease;
+}
+
+/* Aparelho em segundo plano: apagado, como quem esta desligado. */
+.peca-apagada {
+  filter: brightness(0.46) saturate(0.55) contrast(0.95);
+}
+
+/* O APARELHO ACESO — a assinatura da pagina.
+   O brilho vermelho segue o contorno do recorte (drop-shadow respeita o alpha
+   do PNG, diferente de box-shadow, que respeitaria o retangulo). Por isso ele
+   funciona para qualquer formato de aparelho, sem precisar marcar onde fica a
+   ponteira de cada um. */
+.peca-acesa {
+  filter:
+    drop-shadow(0 0 2.5rem oklch(0.62 0.25 27 / 0.34))
+    drop-shadow(0 0 0.75rem oklch(0.62 0.25 27 / 0.22));
+}
+
+/* O reflexo na bancada: a mesma foto, espelhada, sumindo conforme se afasta.
+   A mascara e escrita nas coordenadas do elemento ANTES do espelhamento. Como
+   o aparelho fica apoiado na base da imagem, a base e o "embaixo" local — e e
+   justamente ela que, depois do scaleY(-1), encosta na bancada. Por isso o
+   gradiente e opaco embaixo e transparente em cima, e nao o contrario. */
+.reflexo {
+  transform: scaleY(-1);
+  opacity: 0.18;
+  mask-image: linear-gradient(to top, black 0%, transparent 20%);
+}
+
+/* A poca de luz vermelha embaixo do aparelho aceso. */
+.poca {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  translate: -50% 42%;
+  width: 26rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, oklch(0.62 0.25 27 / 0.4), transparent 72%);
+  filter: blur(0.5rem);
+  pointer-events: none;
+  transition: opacity 620ms ease;
+}
+
+/* Quem pediu menos movimento recebe a mesma cena, parada: o aparelho continua
+   aceso, so nao ha transicao entre um e outro. */
+@media (prefers-reduced-motion: reduce) {
+  .peca,
+  .poca {
+    transition: none;
+  }
+}
+
 /* Fundo suave usado nas secoes de destaque da vitrine. */
 .fundo-vitrine {
   background-image:

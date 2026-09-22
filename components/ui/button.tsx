@@ -1,3 +1,4 @@
+import { isValidElement } from "react";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
@@ -39,16 +40,49 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * O botao do projeto.
+ *
+ * A prop `render` troca a tag que sai no HTML sem perder o estilo. Usamos
+ * muito isso para "botao que na verdade e um link":
+ *
+ *     <Button render={<Link href="/equipamentos" />}>Ver catalogo</Button>
+ *
+ * Só que aí não existe <button> nenhum na página — sai um <a>. O Base UI
+ * precisa saber disso pela prop `nativeButton`: quando ela fica em `true`
+ * (o padrão) ele assume que há um <button> de verdade e deixa de aplicar o
+ * que o elemento não tem de graça, como responder à tecla Espaço. Ele avisa
+ * no console quando percebe a diferença.
+ *
+ * Em vez de repetir `nativeButton={false}` em toda chamada com `render` — são
+ * quase trinta no projeto, e a próxima pessoa esqueceria na seguinte —, a
+ * dedução mora aqui: se veio `render` e o elemento não é literalmente um
+ * <button>, então não é botão nativo. Quem precisar do contrário ainda pode
+ * passar `nativeButton` na mão, que a escolha explícita vence.
+ *
+ * O `render` também aceita uma função. Nesse caso não dá para inspecionar o
+ * elemento antes de renderizar, e assumimos "não nativo" — que é o lado
+ * seguro: o Base UI passa a fornecer a semântica em vez de contar com ela.
+ */
 function Button({
   className,
   variant = "default",
   size = "default",
+  nativeButton,
+  render,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+  const ehBotaoNativo =
+    nativeButton ??
+    (render === undefined ||
+      (isValidElement(render) && render.type === "button"));
+
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      nativeButton={ehBotaoNativo}
+      render={render}
       {...props}
     />
   );

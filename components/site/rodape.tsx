@@ -37,8 +37,9 @@ export function Rodape({ config }: { config: Configuracoes }) {
         <div>
           <h2 className="font-semibold">{config.nome_negocio}</h2>
           <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-            Equipamentos de laser para estetica, com atendimento direto e
-            suporte de quem conhece o setor.
+            Aparelhos de laserterapia DMC para odontologia, fisioterapia,
+            enfermagem e estetica, com atendimento direto de quem conhece o
+            equipamento.
           </p>
         </div>
 
