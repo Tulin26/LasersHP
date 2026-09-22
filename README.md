@@ -173,6 +173,12 @@ Valor total, Comprador, Vendedor e Status**. Vale saber:
 
 Passo a passo completo em [`DEPLOY.md`](DEPLOY.md).
 
+## Seguranca
+
+Lista de verificacao com o que foi conferido, como foi conferido e o que
+ficou pendente: [`SEGURANCA.md`](SEGURANCA.md). Cada item registra o teste
+que produziu a resposta, para poder ser repetido.
+
 Resumo: a Vercel esta conectada a este repositorio e todo push na branch
 `main` publica automaticamente. As mesmas variaveis do `.env.local` precisam
 estar em *Project Settings > Environment Variables*.
