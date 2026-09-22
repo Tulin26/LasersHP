@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const descricao =
     config.seo_descricao ||
     config.subtitulo_home ||
-    "Equipamentos de laser para estetica.";
+    "Equipamentos de laser para estética e saúde.";
 
   return {
     title: { default: titulo, template: `%s | ${config.nome_negocio}` },

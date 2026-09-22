@@ -52,9 +52,9 @@ export const metadata: Metadata = {
    * template: a vitrine em app/(site)/layout.tsx e o painel em
    * app/(admin)/admin/layout.tsx.
    */
-  title: "LaserHP — Equipamentos de laser para estetica",
+  title: "LaserHP — Equipamentos de laser para estética e saúde",
   description:
-    "Venda de equipamentos de laser para estetica com atendimento direto pelo WhatsApp.",
+    "Equipamentos de laser para clínicas de estética e profissionais de saúde. Atendimento direto pelo WhatsApp.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
