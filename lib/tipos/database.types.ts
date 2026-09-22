@@ -106,6 +106,9 @@ export type Database = {
           destaque: boolean;
           criado_em: string;
           atualizado_em: string;
+          /** Coluna gerada pelo banco: estoque > 0. A vitrine mostra isto em vez
+           *  da quantidade, que e informacao interna do negocio. */
+          disponivel: boolean;
         };
         Insert: {
           id?: string;

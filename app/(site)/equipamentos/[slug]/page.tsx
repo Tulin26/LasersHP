@@ -65,7 +65,10 @@ export default async function PaginaEquipamento({
   if (!produto) notFound();
 
   const temPreco = !produto.preco_sob_consulta && produto.preco !== null;
-  const disponivel = produto.estoque > 0;
+  // `disponivel` vem calculado do banco (estoque > 0). A vitrine nunca
+  // recebe a quantidade em si: quantas unidades ha e informacao do negocio,
+  // nao do visitante.
+  const disponivel = produto.disponivel;
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">

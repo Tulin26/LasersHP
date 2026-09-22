@@ -14,6 +14,27 @@ import type { Configuracoes, Produto } from "@/lib/tipos/database.types";
  * configuracoes; sem isso seriam duas viagens ao banco para o mesmo dado.
  */
 
+
+/**
+ * Colunas que a vitrine pede ao banco.
+ *
+ * Antes aqui era `select("*")`. Duas razoes para ter virado lista explicita:
+ *
+ * 1. O visitante anonimo NAO tem mais permissao de ler `estoque` e
+ *    `estoque_minimo` (migracao 0004) — quantas unidades existem e informacao
+ *    interna. Com `*` o PostgREST pede todas as colunas e leva um 42501.
+ * 2. Mesmo que pudesse, mandar coluna que a tela nao usa e desperdicio: sai
+ *    do banco, atravessa a rede e e descartada.
+ *
+ * `disponivel` e uma coluna gerada (estoque > 0): diz se ha unidade sem
+ * revelar quantas.
+ */
+const COLUNAS_PUBLICAS =
+  "id, slug, nome, modelo, descricao, indicacoes, preco, preco_sob_consulta, imagens, ativo, destaque, criado_em, disponivel";
+
+/** O que a vitrine conhece de um equipamento — sem os campos de estoque. */
+export type ProdutoPublico = Omit<Produto, "estoque" | "estoque_minimo" | "atualizado_em">;
+
 /** Valores usados enquanto o primo nao preencher a tela de configuracoes. */
 const CONFIGURACOES_PADRAO: Configuracoes = {
   id: 1,
@@ -54,12 +75,12 @@ export const buscarConfiguracoes = cache(async (): Promise<Configuracoes> => {
 
 /** Catalogo: so produtos ativos. O RLS ja filtra, o .eq e cinto e suspensorio. */
 export const listarProdutosPublicos = cache(
-  async (busca?: string): Promise<Produto[]> => {
+  async (busca?: string): Promise<ProdutoPublico[]> => {
     const supabase = await criarClienteServidor();
 
     let consulta = supabase
       .from("produtos")
-      .select("*")
+      .select(COLUNAS_PUBLICAS)
       .eq("ativo", true)
       .order("destaque", { ascending: false })
       .order("nome", { ascending: true });
@@ -78,12 +99,12 @@ export const listarProdutosPublicos = cache(
   },
 );
 
-export const listarDestaques = cache(async (limite = 3): Promise<Produto[]> => {
+export const listarDestaques = cache(async (limite = 3): Promise<ProdutoPublico[]> => {
   const supabase = await criarClienteServidor();
 
   const { data } = await supabase
     .from("produtos")
-    .select("*")
+    .select(COLUNAS_PUBLICAS)
     .eq("ativo", true)
     .eq("destaque", true)
     .order("nome")
@@ -94,7 +115,7 @@ export const listarDestaques = cache(async (limite = 3): Promise<Produto[]> => {
   // Sem destaque marcado, mostra os mais recentes para a home nao ficar vazia.
   const { data: recentes } = await supabase
     .from("produtos")
-    .select("*")
+    .select(COLUNAS_PUBLICAS)
     .eq("ativo", true)
     .order("criado_em", { ascending: false })
     .limit(limite);
@@ -103,12 +124,12 @@ export const listarDestaques = cache(async (limite = 3): Promise<Produto[]> => {
 });
 
 export const buscarProdutoPorSlug = cache(
-  async (slug: string): Promise<Produto | null> => {
+  async (slug: string): Promise<ProdutoPublico | null> => {
     const supabase = await criarClienteServidor();
 
     const { data } = await supabase
       .from("produtos")
-      .select("*")
+      .select(COLUNAS_PUBLICAS)
       .eq("slug", slug)
       .eq("ativo", true)
       .maybeSingle();

@@ -4,7 +4,7 @@ import { ImageOff } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { capaDoProduto } from "@/lib/imagens";
 import { formatarMoeda, resumir } from "@/lib/formatar";
-import type { Produto } from "@/lib/tipos/database.types";
+import type { ProdutoPublico } from "@/lib/consultas/site";
 
 /**
  * Card do catalogo.
@@ -22,7 +22,10 @@ export function CardEquipamento({
   produto,
   prioridade = false,
 }: {
-  produto: Produto;
+  /* ProdutoPublico, nao Produto: este card so existe na vitrine, e a
+     vitrine nao recebe os campos de estoque do banco. Tipar assim faz o
+     compilador recusar qualquer tentativa de exibir estoque aqui. */
+  produto: ProdutoPublico;
   /** true nos primeiros cards: carrega sem esperar, melhora o LCP. */
   prioridade?: boolean;
 }) {
