@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { GaleriaProduto } from "@/components/site/galeria-produto";
+import { FichaTecnica } from "@/components/site/ficha-tecnica";
 import { FormularioEncomenda } from "@/components/site/formulario-encomenda";
 import {
   buscarConfiguracoes,
@@ -83,14 +84,18 @@ export default async function PaginaEquipamento({
       </Button>
 
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
-        <GaleriaProduto imagens={produto.imagens} nome={produto.nome} />
+        <GaleriaProduto
+          imagens={produto.imagens}
+          nome={produto.nome}
+          comprimentoOnda={produto.comprimento_onda}
+        />
 
         <div>
           <div className="flex flex-wrap items-center gap-2">
             {produto.destaque && <Badge>Destaque</Badge>}
             <Badge variant={disponivel ? "secondary" : "outline"}>
               <Package className="size-3" aria-hidden="true" />
-              {disponivel ? "Disponivel" : "Sob encomenda"}
+              {disponivel ? "Disponível" : "Sob encomenda"}
             </Badge>
           </div>
 
@@ -110,7 +115,7 @@ export default async function PaginaEquipamento({
 
           {!temPreco && (
             <p className="text-muted-foreground mt-1 text-sm">
-              Fale com a gente para receber o valor e as condicoes.
+              Fale com a gente para receber o valor e as condições.
             </p>
           )}
 
@@ -125,6 +130,13 @@ export default async function PaginaEquipamento({
               </section>
             </>
           )}
+
+          <Separator className="my-6" />
+          <FichaTecnica
+            comprimentoOnda={produto.comprimento_onda}
+            area={produto.area}
+            modelo={produto.modelo}
+          />
 
           {produto.indicacoes && (
             <>

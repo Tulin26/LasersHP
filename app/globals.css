@@ -336,3 +336,43 @@
   /* Some nas bordas para a grade nao "cortar" a secao com uma linha dura. */
   mask-image: radial-gradient(70% 60% at 50% 0%, black, transparent);
 }
+
+/* ---------------------------------------------------------------------------
+   ABRIR E FECHAR DAS PERGUNTAS FREQUENTES
+
+   O <details> nativo abre e fecha de um salto: a altura pula de 0 para o
+   tamanho do conteudo num quadro so. Historicamente, animar isso exigia
+   JavaScript medindo a altura, porque nao da para animar `height: auto`.
+
+   O CSS moderno resolveu por conta propria:
+
+     interpolate-size: allow-keywords  — libera o navegador a interpolar ate
+       valores como `auto`, que antes eram "tudo ou nada".
+
+     ::details-content  — passou a existir como alvo: e a caixa que envolve
+       tudo que vem depois do <summary>.
+
+     transition-behavior: allow-discrete — deixa animar propriedades que
+       trocam em degrau (como content-visibility), em vez de elas saltarem no
+       meio da transicao e cortarem o efeito.
+
+   Onde o navegador nao entende, o <details> continua abrindo e fechando
+   normalmente, so que sem deslizar. Nada quebra.
+--------------------------------------------------------------------------- */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .faq::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      content-visibility 0.32s allow-discrete;
+  }
+
+  .faq[open]::details-content {
+    block-size: auto;
+  }
+}

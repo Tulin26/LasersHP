@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ImageOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { urlDaImagem } from "@/lib/imagens";
+import { faixaDoEquipamento } from "@/lib/espectro";
 
 /**
  * Galeria de fotos do equipamento.
@@ -17,16 +17,55 @@ import { urlDaImagem } from "@/lib/imagens";
 export function GaleriaProduto({
   imagens,
   nome,
+  comprimentoOnda,
 }: {
   imagens: string[];
   nome: string;
+  /** Usado so quando nao ha foto: vira a imagem do equipamento. */
+  comprimentoOnda?: string | null;
 }) {
   const [indice, setIndice] = useState(0);
 
+  /*
+   * Sem foto, a faixa do espectro ocupa o lugar dela — mesma solucao dos
+   * cards do catalogo, para a pagina de detalhe nao destoar. O icone de
+   * imagem quebrada que estava aqui dizia ao visitante "este site nao esta
+   * pronto", bem no momento em que ele estava decidindo a compra.
+   */
   if (!imagens || imagens.length === 0) {
+    const faixa = faixaDoEquipamento(comprimentoOnda ?? null);
+
     return (
-      <div className="bg-muted text-muted-foreground flex aspect-4/3 items-center justify-center rounded-xl border">
-        <ImageOff className="size-12" aria-hidden="true" />
+      <div
+        className="relative flex aspect-4/3 items-end overflow-hidden rounded-xl border"
+        style={{ backgroundImage: faixa.degrade }}
+      >
+        <div
+          className="absolute inset-0 opacity-20 mix-blend-overlay"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(115deg, transparent 0 10px, white 10px 11px)",
+          }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+        <div className="relative p-6">
+          {faixa.rotulo ? (
+            <>
+              <p className="font-mono text-[11px] tracking-widest text-white/70 uppercase">
+                Comprimento de onda
+              </p>
+              <p className="font-heading mt-1 text-4xl leading-none font-semibold text-white tabular-nums">
+                {faixa.rotulo}
+              </p>
+            </>
+          ) : (
+            <p className="font-heading text-2xl leading-tight font-semibold text-white">
+              {nome}
+            </p>
+          )}
+        </div>
       </div>
     );
   }

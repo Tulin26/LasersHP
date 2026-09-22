@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cabecalho } from "@/components/site/cabecalho";
 import { Rodape } from "@/components/site/rodape";
+import { TransicaoPagina } from "@/components/site/transicao-pagina";
 import { BotaoWhatsApp } from "@/components/site/botao-whatsapp";
 import { buscarConfiguracoes } from "@/lib/consultas/site";
 
@@ -55,7 +56,9 @@ export default async function LayoutSite({ children }: LayoutProps<"/">) {
     <>
       <Cabecalho nomeNegocio={config.nome_negocio} whatsapp={config.whatsapp} />
 
-      <main className="flex-1">{children}</main>
+      <main className="flex flex-1 flex-col">
+        <TransicaoPagina>{children}</TransicaoPagina>
+      </main>
 
       <Rodape config={config} />
 

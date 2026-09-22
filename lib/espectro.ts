@@ -123,3 +123,60 @@ export function faixaDoEquipamento(
     ehLuz: true,
   };
 }
+
+/**
+ * O que cada faixa do espectro faz, na pratica.
+ *
+ * Isto nao e enfeite: e o argumento de venda. Quem compra um laser escolhe
+ * pelo comprimento de onda, porque e ele que determina a que profundidade a
+ * luz chega e o que ela encontra pelo caminho — melanina, hemoglobina, agua.
+ * Um site que mostra "808 nm" e para por ai obriga o visitante a procurar o
+ * significado em outro lugar; e aquele outro lugar pode ser o concorrente.
+ */
+export function significadoDaFaixa(nm: number): {
+  faixa: string;
+  alvo: string;
+  usoTipico: string;
+} {
+  if (nm < 500)
+    return {
+      faixa: "Luz visível — azul/violeta",
+      alvo: "Absorção superficial, alta em melanina",
+      usoTipico: "Lesões pigmentadas superficiais e ação antimicrobiana",
+    };
+
+  if (nm < 600)
+    return {
+      faixa: "Luz visível — verde",
+      alvo: "Hemoglobina",
+      usoTipico: "Vasos superficiais, vermelhidão e pigmento",
+    };
+
+  if (nm <= 700)
+    return {
+      faixa: "Luz visível — vermelha",
+      alvo: "Cromóforos da mitocôndria (citocromo c oxidase)",
+      usoTipico: "Fotobiomodulação superficial: pele, mucosa e cicatrização",
+    };
+
+  if (nm <= 1100)
+    return {
+      faixa: "Infravermelho próximo",
+      alvo: "Melanina em profundidade e tecido subcutâneo",
+      usoTipico:
+        "Depilação definitiva, vasos profundos e fotobiomodulação em músculo e articulação",
+    };
+
+  if (nm <= 3000)
+    return {
+      faixa: "Infravermelho médio",
+      alvo: "Água do tecido",
+      usoTipico: "Corte e coagulação com baixa dispersão térmica",
+    };
+
+  return {
+    faixa: "Infravermelho distante",
+    alvo: "Água — absorção muito alta",
+    usoTipico: "Ablação de precisão: resurfacing e cirurgia de tecido mole",
+  };
+}

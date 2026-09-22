@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { CardEquipamento } from "@/components/site/card-equipamento";
 import { ListaAnimada } from "@/components/site/lista-animada";
 import { PainelEspectro } from "@/components/site/painel-espectro";
+import { ComoFunciona } from "@/components/site/como-funciona";
+import { PerguntasFrequentes } from "@/components/site/perguntas-frequentes";
+import { Revelar } from "@/components/site/revelar";
 import {
   DuasFrentes,
   EspectroCatalogo,
@@ -49,19 +52,32 @@ export default async function PaginaInicial() {
       <section className="fundo-vitrine border-b">
         <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:py-24 lg:grid-cols-2 lg:items-center">
           <div>
-            <p className="text-primary text-sm font-medium tracking-wide uppercase">
-              {config.nome_negocio}
-            </p>
+            {/*
+              Entrada encadeada: marca, titulo, subtitulo e botoes, nessa
+              ordem. O atraso crescente conduz o olho na ordem de leitura em
+              vez de despejar tudo no mesmo quadro. Sao poucos centesimos
+              entre um e outro — o suficiente para dar ritmo, nao para virar
+              espera.
+            */}
+            <Revelar aoCarregar>
+              <p className="text-primary text-sm font-medium tracking-wide uppercase">
+                {config.nome_negocio}
+              </p>
+            </Revelar>
 
-            <h1 className="mt-3 text-4xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
-              {config.titulo_home}
-            </h1>
+            <Revelar aoCarregar atraso={0.08}>
+              <h1 className="mt-3 text-4xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
+                {config.titulo_home}
+              </h1>
+            </Revelar>
 
-            <p className="text-muted-foreground mt-5 max-w-prose text-lg leading-relaxed">
-              {config.subtitulo_home}
-            </p>
+            <Revelar aoCarregar atraso={0.16}>
+              <p className="text-muted-foreground mt-5 max-w-prose text-lg leading-relaxed">
+                {config.subtitulo_home}
+              </p>
+            </Revelar>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Revelar aoCarregar atraso={0.24} className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button render={<Link href="/equipamentos" />} size="lg">
                 Ver equipamentos
                 <ArrowRight className="size-4" aria-hidden="true" />
@@ -85,7 +101,7 @@ export default async function PaginaInicial() {
                   Tirar dúvidas no WhatsApp
                 </Button>
               )}
-            </div>
+            </Revelar>
           </div>
 
           {/* O painel e renderizado no servidor; o PainelEspectro so
@@ -158,6 +174,10 @@ export default async function PaginaInicial() {
           </Button>
         </section>
       )}
+
+      <ComoFunciona />
+
+      <PerguntasFrequentes />
 
       {/* ---------------------------------------------------------------- */}
       {/* Sobre                                                             */}
