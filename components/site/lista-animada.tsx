@@ -55,7 +55,21 @@ export function ListaAnimada({
           key={indice}
           initial={semMovimento ? false : { opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
+          /*
+           * A margem aqui funciona como o rootMargin do IntersectionObserver:
+           * valor POSITIVO estica a area de observacao para fora da tela, e o
+           * disparo acontece ANTES de o card entrar.
+           *
+           * Antes estava "-40px", que faz o contrario — exige o card 40px
+           * dentro da tela para so entao comecar a animar. No celular, onde os
+           * cards ficam empilhados um por linha, o resultado media era um vao
+           * em branco: o segundo e o terceiro card continuavam invisiveis
+           * enquanto o visitante ja olhava para o lugar deles.
+           *
+           * Com 240px de folga embaixo, cada card ja terminou de aparecer
+           * quando chega na altura dos olhos.
+           */
+          viewport={{ once: true, margin: "0px 0px 240px 0px" }}
           transition={{
             duration: 0.4,
             // Teto de 6 posicoes: numa lista de 30 equipamentos, o ultimo
