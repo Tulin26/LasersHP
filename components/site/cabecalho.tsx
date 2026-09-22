@@ -16,10 +16,10 @@ import { montarLinkWhatsApp, mensagemGenerica } from "@/lib/whatsapp";
  */
 
 const LINKS = [
-  { href: "/", texto: "Inicio" },
+  { href: "/", texto: "Início" },
   { href: "/equipamentos", texto: "Equipamentos" },
   { href: "/#sobre", texto: "Sobre" },
-  { href: "/login", texto: "Area restrita" },
+  { href: "/login", texto: "Área restrita" },
 ];
 
 export function Cabecalho({
@@ -75,7 +75,7 @@ export function Cabecalho({
           </Button>
         ) : (
           <Button render={<Link href="/equipamentos" />} size="sm">
-            Ver catalogo
+            Ver catálogo
           </Button>
         )}
       </div>

@@ -154,7 +154,7 @@ export function FormularioEncomenda({
         aria-hidden="true"
         className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden"
       >
-        <label htmlFor="website">Nao preencha este campo</label>
+        <label htmlFor="website">Não preencha este campo</label>
         <input
           id="website"
           type="text"
@@ -194,7 +194,7 @@ export function FormularioEncomenda({
           id="mensagem"
           name="mensagem"
           rows={3}
-          placeholder="Conte o que voce precisa: tipo de atendimento, duvidas sobre o equipamento..."
+          placeholder="Conte o que você precisa: tipo de atendimento, dúvidas sobre o equipamento..."
         />
         {estado.erros?.mensagem?.[0] && (
           <p className="text-destructive text-xs">{estado.erros.mensagem[0]}</p>

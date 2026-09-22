@@ -23,6 +23,8 @@ export type Json =
   | { [chave: string]: Json | undefined }
   | Json[];
 
+export type AreaAtuacao = "estetica" | "saude" | "ambas";
+
 export type StatusPedido = "novo" | "em_contato" | "fechado" | "cancelado";
 export type StatusVenda = "pago" | "pendente" | "cancelado";
 export type FormaPagamento =
@@ -109,11 +111,18 @@ export type Database = {
           /** Coluna gerada pelo banco: estoque > 0. A vitrine mostra isto em vez
            *  da quantidade, que e informacao interna do negocio. */
           disponivel: boolean;
+          /** Para qual publico o equipamento e vendido. */
+          area: AreaAtuacao;
+          /** Texto livre: "808", "755 / 808 / 1064", "400-1200". Nulo quando
+           *  o equipamento nao e luz (radiofrequencia, criolipolise). */
+          comprimento_onda: string | null;
         };
         Insert: {
           id?: string;
           slug: string;
           nome: string;
+          area?: AreaAtuacao;
+          comprimento_onda?: string | null;
           modelo?: string | null;
           descricao?: string | null;
           indicacoes?: string | null;
@@ -356,6 +365,7 @@ export type Database = {
       };
     };
     Enums: {
+      area_atuacao: AreaAtuacao;
       status_pedido: StatusPedido;
       status_venda: StatusVenda;
       forma_pagamento: FormaPagamento;

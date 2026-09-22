@@ -30,7 +30,7 @@ import type { Configuracoes, Produto } from "@/lib/tipos/database.types";
  * revelar quantas.
  */
 const COLUNAS_PUBLICAS =
-  "id, slug, nome, modelo, descricao, indicacoes, preco, preco_sob_consulta, imagens, ativo, destaque, criado_em, disponivel";
+  "id, slug, nome, modelo, descricao, indicacoes, preco, preco_sob_consulta, imagens, ativo, destaque, criado_em, disponivel, area, comprimento_onda";
 
 /** O que a vitrine conhece de um equipamento — sem os campos de estoque. */
 export type ProdutoPublico = Omit<Produto, "estoque" | "estoque_minimo" | "atualizado_em">;

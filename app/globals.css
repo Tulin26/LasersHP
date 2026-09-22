@@ -7,9 +7,16 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  /*
+   * Aqui morava um bug silencioso: `--font-sans: var(--font-sans)`, uma
+   * variavel apontando para si mesma. Nao resolvia para nada, entao o
+   * `@apply font-sans` la embaixo caia no serif padrao do navegador e o site
+   * inteiro era servido em Times New Roman. Agora aponta para as fontes que o
+   * layout.tsx realmente carrega.
+   */
+  --font-sans: var(--fonte-texto);
+  --font-heading: var(--fonte-titulo);
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -128,33 +135,204 @@
     @apply font-sans;
   }
 }
-/* ---------------------------------------------------------------------------
-   Identidade visual do LaserHP.
-   Sobrescreve as cores neutras que o shadcn instala por padrao. Como este
-   bloco vem DEPOIS no arquivo, ele vence — nao precisa mexer no resto.
-   As cores estao em oklch (o padrao do Tailwind v4): luminosidade, croma
-   e matiz. Matiz 320 = ameixa/orquidea, que conversa com o setor de estetica.
+
+/* ===========================================================================
+   IDENTIDADE VISUAL DO LASERHP
+   ===========================================================================
+   Sobrescreve o tema neutro que o shadcn instala. Vem depois no arquivo, logo
+   vence — nao e preciso mexer em nada acima.
+
+   As cores estao em oklch (padrao do Tailwind v4): luminosidade, croma, matiz.
+   A vantagem sobre hex: variar so a luminosidade mantem a mesma cor, sem
+   aquele efeito de "sujar" que acontece ao clarear um hex na mao.
+
+   A ideia da paleta
+   -----------------
+   O negocio atende duas frentes com publicos diferentes: estetica (clinica,
+   esteticista) e saude (enfermeiro, fisioterapeuta, dentista fazendo
+   laserterapia). Uma cor so nao serve as duas — rosa demais afasta o clinico,
+   azul-hospital demais esfria a estetica.
+
+   Entao sao tres cores com papeis distintos:
+
+     --marca     violeta profundo. E a cor da EMPRESA: cabecalho, botao
+                 principal, foco. Fica entre os dois mundos.
+     --estetica  magenta quente. Marca o que e do mundo da beleza.
+     --saude     teal clinico. Marca o que e do mundo terapeutico.
+
+   Assim as duas frentes se reconhecem na vitrine sem o site virar dois sites.
 --------------------------------------------------------------------------- */
 :root {
-  --primary: oklch(0.43 0.13 320);
-  --primary-foreground: oklch(0.99 0.005 320);
-  --ring: oklch(0.43 0.13 320);
-  --sidebar-primary: oklch(0.43 0.13 320);
-  --sidebar-ring: oklch(0.43 0.13 320);
-  --radius: 0.75rem;
+  /* Base — fundo levemente quente. Branco puro (oklch 1 0 0) e um dos
+     motivos pelos quais uma tela parece "gerada": nenhuma marca impressa
+     usa papel branco absoluto. */
+  --background: oklch(0.988 0.003 95);
+  --foreground: oklch(0.21 0.022 275);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.022 275);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.022 275);
+
+  /* Marca */
+  --marca: oklch(0.44 0.16 288);
+  --marca-clara: oklch(0.62 0.15 290);
+  --marca-suave: oklch(0.95 0.025 290);
+
+  /* As duas frentes */
+  --estetica: oklch(0.58 0.19 348);
+  --estetica-suave: oklch(0.96 0.03 348);
+  --saude: oklch(0.55 0.1 205);
+  --saude-suave: oklch(0.96 0.025 205);
+
+  --primary: var(--marca);
+  --primary-foreground: oklch(0.99 0.005 290);
+  --secondary: oklch(0.965 0.006 285);
+  --secondary-foreground: oklch(0.27 0.03 280);
+  --muted: oklch(0.965 0.006 285);
+  --muted-foreground: oklch(0.51 0.02 280);
+  --accent: var(--marca-suave);
+  --accent-foreground: oklch(0.3 0.08 288);
+
+  --border: oklch(0.915 0.008 285);
+  --input: oklch(0.915 0.008 285);
+  --ring: var(--marca-clara);
+
+  /* Cantos menos arredondados que o padrao do shadcn. Raio grande em tudo
+     deixa a tela com ar de template; aqui o card e discreto e so o botao e
+     a etiqueta ficam bem redondos, por contraste. */
+  --radius: 0.5rem;
 }
 
 .dark {
-  --primary: oklch(0.72 0.12 320);
-  --primary-foreground: oklch(0.18 0.03 320);
-  --ring: oklch(0.72 0.12 320);
-  --sidebar-primary: oklch(0.72 0.12 320);
-  --sidebar-ring: oklch(0.72 0.12 320);
+  --background: oklch(0.17 0.018 280);
+  --foreground: oklch(0.96 0.005 285);
+  --card: oklch(0.215 0.022 281);
+  --card-foreground: oklch(0.96 0.005 285);
+  --popover: oklch(0.215 0.022 281);
+  --popover-foreground: oklch(0.96 0.005 285);
+
+  --marca: oklch(0.7 0.14 290);
+  --marca-clara: oklch(0.78 0.12 292);
+  --marca-suave: oklch(0.28 0.06 288);
+
+  --estetica: oklch(0.72 0.16 350);
+  --estetica-suave: oklch(0.3 0.07 350);
+  --saude: oklch(0.72 0.1 205);
+  --saude-suave: oklch(0.28 0.05 205);
+
+  --primary: var(--marca);
+  --primary-foreground: oklch(0.16 0.03 290);
+  --secondary: oklch(0.27 0.025 281);
+  --secondary-foreground: oklch(0.96 0.005 285);
+  --muted: oklch(0.27 0.025 281);
+  --muted-foreground: oklch(0.7 0.02 285);
+  --accent: var(--marca-suave);
+  --accent-foreground: oklch(0.93 0.02 290);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: var(--marca-clara);
 }
 
-/* Fundo suave usado nas secoes de destaque da vitrine. */
+/* Deixa as tres cores disponiveis como classe do Tailwind:
+   text-marca, bg-estetica, border-saude... */
+@theme inline {
+  --color-marca: var(--marca);
+  --color-marca-clara: var(--marca-clara);
+  --color-marca-suave: var(--marca-suave);
+  --color-estetica: var(--estetica);
+  --color-estetica-suave: var(--estetica-suave);
+  --color-saude: var(--saude);
+  --color-saude-suave: var(--saude-suave);
+}
+
+/* ---------------------------------------------------------------------------
+   TIPOGRAFIA
+   Titulo e texto tem familias diferentes e precisam de tratamento diferente.
+   Titulo grande pede entrelinha curta e letras mais juntas; no tamanho de
+   display, o espacamento padrao da fonte parece frouxo.
+--------------------------------------------------------------------------- */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+
+  h1 {
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  /* Evita a linha orfa de uma palavra so no fim do paragrafo. */
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   MOVIMENTO
+   Quem marcou "reduzir movimento" no sistema tem motivo — enjoo, enxaqueca,
+   sensibilidade vestibular. Esta regra desliga tudo de uma vez, inclusive as
+   animacoes do motion e do GSAP, que respeitam a preferencia do navegador.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   FUNDOS DA VITRINE
+--------------------------------------------------------------------------- */
+
+/*
+ * Fundo do heroi e da tela de login.
+ *
+ * O que mudou em relacao ao anterior: eram dois borroes radiais grandes e
+ * claros, aquele degrade lavanda que qualquer pagina de template tem. Agora e
+ * uma malha mais contida (os brilhos ocupam menos area e ficam nos cantos) com
+ * as DUAS cores das frentes — magenta de um lado, teal do outro — mais uma
+ * grade fina por cima.
+ *
+ * A grade e o detalhe que muda o carater: papel milimetrado remete a ficha
+ * tecnica, a medicao, que e o assunto do negocio. Fica em 3% de opacidade,
+ * entao voce nao "ve" a grade, so sente que o fundo tem materia.
+ */
 .fundo-vitrine {
+  position: relative;
+  background-color: var(--background);
   background-image:
-    radial-gradient(60rem 30rem at 15% -10%, oklch(0.43 0.13 320 / 0.14), transparent 60%),
-    radial-gradient(45rem 28rem at 95% 0%, oklch(0.6 0.1 200 / 0.12), transparent 55%);
+    radial-gradient(
+      32rem 22rem at 8% -8%,
+      oklch(from var(--estetica) l c h / 0.16),
+      transparent 62%
+    ),
+    radial-gradient(
+      28rem 20rem at 100% -4%,
+      oklch(from var(--saude) l c h / 0.14),
+      transparent 58%
+    );
+}
+
+.fundo-vitrine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--foreground) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--foreground) 1px, transparent 1px);
+  background-size: 3.5rem 3.5rem;
+  opacity: 0.03;
+  /* Some nas bordas para a grade nao "cortar" a secao com uma linha dura. */
+  mask-image: radial-gradient(70% 60% at 50% 0%, black, transparent);
 }

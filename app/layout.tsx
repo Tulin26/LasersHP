@@ -1,16 +1,34 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/*
+ * Tipografia.
+ *
+ * Duas familias com papeis diferentes, que e o que separa um site desenhado
+ * de um site montado:
+ *
+ *   Space Grotesk — titulos. Geometrica e um pouco tecnica, com desenho
+ *     proprio no "g" e no "a". Passa precisao de equipamento sem ficar fria.
+ *   Inter — texto corrido, rotulo de formulario, tabela do painel. Feita para
+ *     ser lida sem chamar atencao, que e exatamente o que uma ficha tecnica
+ *     precisa.
+ *
+ * O `display: "swap"` mostra o texto na fonte do sistema enquanto a definitiva
+ * baixa, em vez de deixar a tela em branco — importante para quem abre pelo
+ * Instagram no 4G.
+ */
+const fonteTitulo = Space_Grotesk({
+  variable: "--fonte-titulo",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fonteTexto = Inter({
+  variable: "--fonte-texto",
   subsets: ["latin"],
+  display: "swap",
 });
 
 /**
@@ -43,7 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fonteTitulo.variable} ${fonteTexto.variable} h-full antialiased`}
     >
       <body className="bg-background text-foreground flex min-h-full flex-col">
         {children}

@@ -79,7 +79,7 @@ export default async function PaginaEquipamento({
         className="-ml-2"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
-        Voltar ao catalogo
+        Voltar ao catálogo
       </Button>
 
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
@@ -118,7 +118,7 @@ export default async function PaginaEquipamento({
             <>
               <Separator className="my-6" />
               <section>
-                <h2 className="font-semibold">Descricao</h2>
+                <h2 className="font-semibold">Descrição</h2>
                 <p className="text-muted-foreground mt-2 leading-relaxed whitespace-pre-line">
                   {produto.descricao}
                 </p>
@@ -130,7 +130,7 @@ export default async function PaginaEquipamento({
             <>
               <Separator className="my-6" />
               <section>
-                <h2 className="font-semibold">Indicacoes de uso</h2>
+                <h2 className="font-semibold">Indicações de uso</h2>
                 <ul className="mt-3 space-y-2">
                   {produto.indicacoes
                     .split(/\r?\n/)
