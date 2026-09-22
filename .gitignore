@@ -47,3 +47,7 @@ supabase/.temp
 
 # o exemplo, sem segredo nenhum, fica versionado (precisa vir DEPOIS do .env*)
 !.env.example
+
+# senha do painel gerada localmente. Texto puro: leia, guarde no gerenciador
+# de senhas e apague o arquivo. Nunca versionar.
+senha-admin.txt
