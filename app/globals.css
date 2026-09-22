@@ -376,3 +376,114 @@
     block-size: auto;
   }
 }
+
+/* ===========================================================================
+   O TRILHO DE DESTAQUES
+   ===========================================================================
+   Uma faixa escura entre secoes claras. Nao e "tema escuro do site": e um
+   palco, e a mudanca de luz e o que anuncia que ali se olha em vez de ler.
+
+   Por que escuro: os equipamentos aparecem recortados, sem fundo. Sobre o
+   branco quente da vitrine um recorte claro some; sobre o escuro ele ganha
+   volume, e a luz que o aparelho emite fica visivel.
+
+   O preto nao e neutro — e o violeta da marca levado ao fundo da escala.
+   Preto puro aqui pareceria uma secao de outro site colada no meio.
+--------------------------------------------------------------------------- */
+.palco {
+  /* Tokens locais. Ficam SO dentro da faixa: o resto da vitrine nao muda. */
+  --palco-fundo: oklch(0.17 0.03 288);
+  --palco-bancada: oklch(0.23 0.035 288);
+  --palco-texto: oklch(0.97 0.006 290);
+  --palco-suave: oklch(0.72 0.02 290);
+  --palco-linha: oklch(1 0 0 / 0.14);
+
+  position: relative;
+  overflow: hidden;
+  color: var(--palco-texto);
+  background:
+    radial-gradient(60rem 36rem at 62% 82%, oklch(0.27 0.045 288 / 0.9), transparent 62%),
+    var(--palco-fundo);
+}
+
+/* A linha do chao. Todos os aparelhos apoiam nela, como na foto que o
+   proprio fabricante faz: os quatro enfileirados sobre a mesma mesa. */
+.palco-bancada::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--palco-linha) 28%,
+    var(--palco-linha) 72%,
+    transparent
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   As pecas
+--------------------------------------------------------------------------- */
+.peca {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  /* Escala a partir da base: assim todos ficam apoiados na mesma linha,
+     por maior ou menor que cada um apareca. */
+  transform-origin: bottom center;
+  will-change: transform;
+  transition:
+    transform 620ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 620ms ease,
+    opacity 620ms ease;
+}
+
+/* Em segundo plano: apagado, como aparelho desligado.
+   O escurecimento e forte de proposito. Com pouca diferenca, o vizinho da
+   direita — que aparece MAIOR que o em foco — disputa o olho com ele, e o
+   carrossel perde o centro. */
+.peca-apagada {
+  filter: brightness(0.34) saturate(0.4) contrast(0.92);
+}
+
+/* O reflexo na bancada: a mesma foto, espelhada, sumindo conforme se afasta.
+   A mascara e escrita nas coordenadas do elemento ANTES do espelhamento.
+   Como o aparelho fica apoiado na base da imagem, a base e o "embaixo" local
+   — e e ela que, depois do scaleY(-1), encosta na bancada. Por isso o
+   gradiente e opaco embaixo e transparente em cima, e nao o contrario. */
+.reflexo {
+  transform: scaleY(-1);
+  opacity: 0.17;
+  mask-image: linear-gradient(to top, black 0%, transparent 20%);
+}
+
+/* A poca de luz na bancada, embaixo do aparelho aceso. A COR vem do
+   comprimento de onda do proprio equipamento, via variavel inline. */
+.poca {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  translate: -50% 42%;
+  width: 26rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    oklch(from var(--luz) l c h / 0.42),
+    transparent 72%
+  );
+  filter: blur(0.5rem);
+  pointer-events: none;
+  transition: opacity 620ms ease;
+}
+
+/* Quem pediu menos movimento recebe a mesma cena, parada: o aparelho
+   continua aceso, so nao ha transicao de um para o outro. */
+@media (prefers-reduced-motion: reduce) {
+  .peca,
+  .poca {
+    transition: none;
+  }
+}

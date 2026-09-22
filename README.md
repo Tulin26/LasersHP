@@ -23,6 +23,11 @@ Next.js, separados por grupos de rota.
 **Vitrine publica**
 
 - Home com textos editaveis pelo painel e equipamentos em destaque
+- Trilho de destaques: uma faixa escura onde os equipamentos aparecem em
+  perspectiva, apoiados na mesma bancada, e o do meio fica aceso com a cor do
+  proprio comprimento de onda. Arrasta com o dedo, o mouse ou as setas, e da a
+  volta no fim da lista. So entra quando ha ao menos **tres destaques com
+  foto** — sem imagem a faixa ficaria vazia, entao a grade de cards continua
 - Catalogo com busca por nome e modelo
 - Pagina de cada equipamento, com galeria de fotos e indicacoes de uso
 - Formulario de encomenda: grava o pedido no banco **e** redireciona para o
@@ -90,6 +95,33 @@ aplicados pelo SQL Editor do Supabase, **nesta ordem**:
 
 Sem o passo 3 o login funciona mas o painel fica vazio, porque o RLS nao
 reconhece o usuario.
+
+4. `0010_representacao_dmc.sql` — **opcional**. Cadastra os aparelhos de
+   laserterapia da DMC (a frente de saude) apontando para os recortes em
+   `public/aparelhos/`. E o que faz o trilho da home aparecer: os produtos de
+   demonstracao do `0003` nao tem foto. Os numeros vieram da documentacao do
+   fabricante e da distribuidora oficial, creditados em comentario no arquivo.
+   O Therapy IA EC fica num bloco comentado no fim — leia o porque antes de
+   habilitar.
+
+### As fotos do trilho
+
+Os arquivos em `public/aparelhos/` foram recortados das artes oficiais do
+fabricante: fundo removido, aparelho apoiado na base de uma tela de 1000x1500.
+Duas decisoes que valem conhecer:
+
+- **A tela e igual para os quatro, e cada aparelho ocupa dentro dela a altura
+  que tem em relacao aos outros.** O E-LIB e de pulso: sai com 61% da altura,
+  contra 100% das canetas. Se cada arquivo saisse cortado justo, o navegador
+  normalizaria todos pela altura da caixa e um aparelho de pulso apareceria do
+  tamanho de uma caneta de 20 cm.
+- **O caminho comeca com `/`.** A funcao `urlDaImagem()` entende tres formas:
+  URL completa, caminho da pasta `public/` (comecando com `/`) e caminho do
+  Supabase Storage (qualquer outra coisa). E por isso que esses recortes
+  convivem com as fotos que o painel envia.
+
+Para trocar por fotos proprias, o ideal sao **PNGs com fundo transparente**,
+com o aparelho apoiado na base da imagem.
 
 Todas as tabelas tem Row Level Security ligado. A vitrine enxerga apenas
 produtos ativos e as configuracoes; o restante exige login. O vendedor so

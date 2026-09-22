@@ -20,6 +20,14 @@ export function urlDaImagem(caminho: string | null | undefined): string | null {
     return caminho;
   }
 
+  // Comeca com "/": e um arquivo da pasta public/ deste projeto, servido pelo
+  // proprio site. E assim que entram os recortes em public/aparelhos/, que
+  // vieram das artes oficiais do fabricante e nao do Storage. Fotos enviadas
+  // pelo painel continuam caindo no caso de baixo, sem prefixo.
+  if (caminho.startsWith("/")) {
+    return caminho;
+  }
+
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!base) return null;
 

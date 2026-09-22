@@ -7,6 +7,7 @@ import { PainelEspectro } from "@/components/site/painel-espectro";
 import { ComoFunciona } from "@/components/site/como-funciona";
 import { PerguntasFrequentes } from "@/components/site/perguntas-frequentes";
 import { Revelar } from "@/components/site/revelar";
+import { TrilhoDestaques } from "@/components/site/trilho-destaques";
 import {
   DuasFrentes,
   EspectroCatalogo,
@@ -16,6 +17,7 @@ import {
   listarDestaques,
   listarProdutosPublicos,
 } from "@/lib/consultas/site";
+import { capaDoProduto } from "@/lib/imagens";
 import { montarLinkWhatsApp, mensagemGenerica } from "@/lib/whatsapp";
 
 /**
@@ -33,9 +35,15 @@ export default async function PaginaInicial() {
   // await em sequencia, a segunda so comecaria depois da primeira terminar.
   const [config, destaques, catalogo] = await Promise.all([
     buscarConfiguracoes(),
-    listarDestaques(3),
+    // Seis, nao tres: o trilho mostra varios ao mesmo tempo em perspectiva e
+    // da a volta no fim. A grade de reserva continua usando so os tres
+    // primeiros.
+    listarDestaques(6),
     listarProdutosPublicos(),
   ]);
+
+  // O trilho depende de foto. Sem imagem nao ha o que colocar no palco.
+  const comFoto = destaques.filter((p) => capaDoProduto(p.imagens));
 
   // "ambas" conta para as duas frentes: um CO2 fracionado interessa tanto a
   // clinica de estetica quanto ao consultorio que trata ferida.
@@ -134,45 +142,76 @@ export default async function PaginaInicial() {
       {/* Destaques do catalogo                                            */}
       {/* ---------------------------------------------------------------- */}
       {destaques.length > 0 && (
-        <section className="mx-auto w-full max-w-6xl px-4 py-16">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-                Equipamentos em destaque
-              </h2>
-              <p className="text-muted-foreground mt-2">
-                Uma amostra do que temos disponível agora.
-              </p>
+        <>
+          <section className="mx-auto w-full max-w-6xl px-4 pt-16 pb-8">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Equipamentos em destaque
+                </h2>
+                <p className="text-muted-foreground mt-2">
+                  {comFoto.length >= 3
+                    ? "Arraste para ver cada um de perto."
+                    : "Uma amostra do que temos disponível agora."}
+                </p>
+              </div>
+
+              <Button
+                render={<Link href="/equipamentos" />}
+                variant="ghost"
+                className="hidden sm:inline-flex"
+              >
+                Ver todos
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Button>
             </div>
+          </section>
 
-            <Button
-              render={<Link href="/equipamentos" />}
-              variant="ghost"
-              className="hidden sm:inline-flex"
-            >
-              Ver todos
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </Button>
-          </div>
-
-          <ListaAnimada className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {destaques.map((produto, indice) => (
-              <CardEquipamento
-                key={produto.id}
-                produto={produto}
-                prioridade={indice === 0}
+          {/*
+            O trilho so entra quando ha pelo menos tres equipamentos COM FOTO.
+            Ele existe para mostrar o aparelho; com o cadastro sem imagem
+            sobraria uma faixa escura e vazia, entao a grade de cards — que
+            tem um lugar reservado para "sem foto" — continua atendendo.
+          */}
+          {comFoto.length >= 3 ? (
+            <>
+              <TrilhoDestaques
+                produtos={comFoto}
+                whatsapp={config.whatsapp}
               />
-            ))}
-          </ListaAnimada>
 
-          <Button
-            render={<Link href="/equipamentos" />}
-            variant="outline"
-            className="mt-8 w-full sm:hidden"
-          >
-            Ver catálogo completo
-          </Button>
-        </section>
+              <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:hidden">
+                <Button
+                  render={<Link href="/equipamentos" />}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Ver catálogo completo
+                </Button>
+              </div>
+            </>
+          ) : (
+            <section className="mx-auto w-full max-w-6xl px-4 pb-16">
+              <ListaAnimada className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {destaques.slice(0, 3).map((produto, indice) => (
+                  <CardEquipamento
+                    key={produto.id}
+                    produto={produto}
+                    prioridade={indice === 0}
+                  />
+                ))}
+              </ListaAnimada>
+
+              <Button
+                render={<Link href="/equipamentos" />}
+                variant="outline"
+                className="mt-8 w-full sm:hidden"
+              >
+                Ver catálogo completo
+              </Button>
+            </section>
+          )}
+        </>
       )}
 
       <ComoFunciona />
