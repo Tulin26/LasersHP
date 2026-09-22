@@ -71,12 +71,19 @@ export function FormularioConfiguracoes({ config }: { config: Configuracoes }) {
           />
           <CampoTexto
             nome="instagram"
-            rotulo="Instagram"
+            rotulo="Instagram principal"
             valor={config.instagram}
             placeholder="@seuperfil"
             ajuda="So o usuario; o link e montado sozinho."
             erro={estado.erros?.instagram?.[0]}
-            className="sm:col-span-2"
+          />
+          <CampoTexto
+            nome="instagram_secundario"
+            rotulo="Instagram secundario"
+            valor={config.instagram_secundario}
+            placeholder="@outroperfil"
+            ajuda="Opcional. Deixe vazio se houver so um perfil."
+            erro={estado.erros?.instagram_secundario?.[0]}
           />
         </div>
       </section>

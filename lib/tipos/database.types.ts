@@ -287,6 +287,7 @@ export type Database = {
           email_contato: string | null;
           cidade: string | null;
           instagram: string | null;
+          instagram_secundario: string | null;
           titulo_home: string;
           subtitulo_home: string;
           texto_sobre: string | null;
@@ -302,6 +303,7 @@ export type Database = {
           email_contato?: string | null;
           cidade?: string | null;
           instagram?: string | null;
+          instagram_secundario?: string | null;
           titulo_home?: string;
           subtitulo_home?: string;
           texto_sobre?: string | null;
@@ -315,6 +317,7 @@ export type Database = {
           email_contato?: string | null;
           cidade?: string | null;
           instagram?: string | null;
+          instagram_secundario?: string | null;
           titulo_home?: string;
           subtitulo_home?: string;
           texto_sobre?: string | null;

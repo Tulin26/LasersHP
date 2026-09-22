@@ -80,19 +80,27 @@ export function Rodape({ config }: { config: Configuracoes }) {
                 {config.cidade}
               </li>
             )}
-            {config.instagram && (
-              <li>
-                <a
-                  href={`https://instagram.com/${config.instagram.replace(/^@/, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-foreground inline-flex items-center gap-2 transition"
-                >
-                  <IconeInstagram className="size-4" />
-                  {config.instagram}
-                </a>
-              </li>
-            )}
+            {/*
+              O negocio tem dois perfis: o de vendas e o de conteudo. Em vez
+              de repetir o mesmo bloco duas vezes, filtramos os que existem e
+              percorremos a lista — assim, se um dia sobrar so um, o rodape se
+              ajusta sozinho.
+            */}
+            {[config.instagram, config.instagram_secundario]
+              .filter((perfil): perfil is string => Boolean(perfil?.trim()))
+              .map((perfil) => (
+                <li key={perfil}>
+                  <a
+                    href={`https://instagram.com/${perfil.replace(/^@/, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-foreground inline-flex items-center gap-2 transition"
+                  >
+                    <IconeInstagram className="size-4" />
+                    {perfil}
+                  </a>
+                </li>
+              ))}
           </ul>
         </div>
       </div>

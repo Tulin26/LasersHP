@@ -43,6 +43,7 @@ const CONFIGURACOES_PADRAO: Configuracoes = {
   email_contato: null,
   cidade: null,
   instagram: null,
+  instagram_secundario: null,
   titulo_home: "Equipamentos de laser para estetica",
   subtitulo_home:
     "Tecnologia profissional para clinicas e esteticistas, com suporte de quem entende do assunto.",

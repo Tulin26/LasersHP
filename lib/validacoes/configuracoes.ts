@@ -28,6 +28,7 @@ export const schemaConfiguracoes = z.object({
   email_contato: emailOpcional,
   cidade: textoOpcional(120),
   instagram: textoOpcional(120),
+  instagram_secundario: textoOpcional(120),
 
   titulo_home: textoOpcional(160),
   subtitulo_home: textoOpcional(300),
