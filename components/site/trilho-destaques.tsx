@@ -3,12 +3,7 @@
 import { useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
-  MessageCircle,
-} from "lucide-react";
+import { ArrowUpRight, MessageCircle } from "lucide-react";
 import { capaDoProduto } from "@/lib/imagens";
 import { formatarMoeda } from "@/lib/formatar";
 import { corDoComprimento, lerComprimentos } from "@/lib/espectro";
@@ -27,8 +22,8 @@ import type { ProdutoPublico } from "@/lib/consultas/site";
  * luz que ele emite de verdade. Arrasta com o dedo, com o mouse ou com as
  * setas, e da a volta no fim da lista.
  *
- * Tambem da para CLICAR: no aparelho vizinho, de qualquer lado, ou nas setas
- * das pontas. O arraste so assume depois que o dedo anda alguns pixels —
+ * Tambem da para CLICAR no aparelho vizinho, de qualquer lado, e usar as
+ * setas do teclado. O arraste so assume depois que o dedo anda alguns pixels —
  * antes disso o toque e um clique comum.
  *
  * E um Client Component porque precisa de estado e de eventos de ponteiro. Os
@@ -376,9 +371,6 @@ export function TrilhoDestaques({
 
   if (total === 0) return null;
 
-  const podeVoltar = emLaco || indice > 0;
-  const podeAvancar = emLaco || indice < ultimo;
-
   return (
     <section className="palco border-y">
       <div className="mx-auto w-full max-w-6xl px-4">
@@ -524,22 +516,6 @@ export function TrilhoDestaques({
             }}
           />
 
-          {/* Setas nas duas pontas, por cima do veu. Ficam FORA do trilho
-              porque o clip-path dele cria um contexto de empilhamento: dentro,
-              a seta da esquerda ficaria embaixo do veu, apagada. */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-40 flex h-[20rem] items-center justify-between sm:h-[26rem] lg:top-16 lg:right-0 lg:left-[37%] lg:h-[30rem]">
-            <Seta
-              direcao="anterior"
-              aoClicar={() => irPara(indice - 1)}
-              desativada={!podeVoltar}
-            />
-            <Seta
-              direcao="proximo"
-              aoClicar={() => irPara(indice + 1)}
-              desativada={!podeAvancar}
-            />
-          </div>
-
           {/* ---------------------------------------------------------- */}
           {/* A ficha do aparelho em foco                                 */}
           {/* ---------------------------------------------------------- */}
@@ -553,32 +529,6 @@ export function TrilhoDestaques({
         </div>
       </div>
     </section>
-  );
-}
-
-/** Seta de navegacao numa das pontas do trilho. */
-function Seta({
-  direcao,
-  aoClicar,
-  desativada,
-}: {
-  direcao: "anterior" | "proximo";
-  aoClicar: () => void;
-  desativada: boolean;
-}) {
-  const Icone = direcao === "anterior" ? ChevronLeft : ChevronRight;
-  return (
-    <button
-      type="button"
-      onClick={aoClicar}
-      disabled={desativada}
-      aria-label={
-        direcao === "anterior" ? "Equipamento anterior" : "Proximo equipamento"
-      }
-      className="pointer-events-auto flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white backdrop-blur-sm transition hover:border-white/40 hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none active:scale-95 disabled:pointer-events-none disabled:opacity-0"
-    >
-      <Icone className="size-5" aria-hidden="true" />
-    </button>
   );
 }
 
